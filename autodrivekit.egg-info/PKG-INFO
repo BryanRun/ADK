@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: autodrivekit
+Version: 1.1.0
+Summary: AutoDriveKit（ADK）— 统一工具平台；单一 CLI 入口 adk，聚合车辆工具链（property / cfg-word / vhal-svc 等）
+Requires-Python: >=3.10
+Requires-Dist: typer>=0.9.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: openpyxl
+Requires-Dist: jinja2
+Requires-Dist: requests
+Provides-Extra: dev

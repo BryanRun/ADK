@@ -1,0 +1,316 @@
+/******************************************************************************
+/                              Copyright
+/------------------------------------------------------------------------------
+*******************************************************************************/
+
+
+package vendor.autolink.vehiclehal@2.0;
+
+import android.hardware.automotive.vehicle@2.0;
+
+enum VendorVehicleArea : int32_t {
+    GLOBAL                         = 0x01000000,
+    WINDOW                         = 0x03000000,
+    MIRROR                         = 0x04000000,
+    SEAT                           = 0x05000000,
+    DOOR                           = 0x06000000,
+    WHEEL                          = 0x07000000,
+    BODY                           = 0x08000000,
+
+    MASK                           = 0x0f000000,
+};
+
+/**
+ * Various body in the car.
+ */
+enum VendorVehicleAreaBody : int32_t {
+    BODY_FRONT                     = 0x0001,
+    BODY_REAR                      = 0x0002,
+    BODY_LEFT                      = 0x0004,
+    BODY_RIGHT                     = 0x0008,
+    BODY_FRONT_LEFT                = 0x0010,
+    BODY_FRONT_MIDDLE_LEFT         = 0x0020,
+    BODY_FRONT_MIDDLE_RIGHT        = 0x0040,
+    BODY_FRONT_RIGHT               = 0x0080,
+    BODY_REAR_LEFT                 = 0x0100,
+    BODY_REAR_MIDDLE_LEFT          = 0x0200,
+    BODY_REAR_MIDDLE_RIGHT         = 0x0400,
+    BODY_REAR_RIGHT                = 0x0800,
+
+};
+
+/**
+ * Various seat in the car.
+ */
+enum VendorVehicleAreaSeat : int32_t {
+    SEAT_ROW_1_LEFT                = 0x0001,
+    SEAT_ROW_1_CENTER              = 0x0002,
+    SEAT_ROW_1_RIGHT               = 0x0004,
+    SEAT_ROW_2_LEFT                = 0x0010,
+    SEAT_ROW_2_CENTER              = 0x0020,
+    SEAT_ROW_2_RIGHT               = 0x0040,
+    SEAT_ROW_3_LEFT                = 0x0100,
+    SEAT_ROW_3_CENTER              = 0x0200,
+    SEAT_ROW_3_RIGHT               = 0x0400,
+
+};
+
+/**
+ * Various mirror in the car.
+ */
+enum VendorVehicleAreaMirror : int32_t {
+    MIRROR_DRIVER_LEFT             = 0x0001,
+    MIRROR_DRIVER_RIGHT            = 0x0002,
+    MIRROR_DRIVER_CENTER           = 0x0004,
+
+};
+
+/**
+ * Various window in the car.
+ */
+enum VendorVehicleAreaWindow : int32_t {
+    WINDOW_FRONT_WINDSHIELD        = 0x00000001,
+    WINDOW_REAR_WINDSHIELD         = 0x00000002,
+    WINDOW_ROW_1_LEFT              = 0x00000010,
+    WINDOW_ROW_1_RIGHT             = 0x00000040,
+    WINDOW_ROW_2_LEFT              = 0x00000100,
+    WINDOW_ROW_2_RIGHT             = 0x00000400,
+    WINDOW_ROW_3_LEFT              = 0x00001000,
+    WINDOW_ROW_3_RIGHT             = 0x00004000,
+    WINDOW_ROOF_TOP_1              = 0x00010000,
+    WINDOW_ROOF_TOP_2              = 0x00020000,
+
+};
+
+/**
+ * Various door in the car.
+ */
+enum VendorVehicleAreaDoor : int32_t {
+    DOOR_ROW_1_LEFT                = 0x00000001,
+    DOOR_ROW_1_RIGHT               = 0x00000004,
+    DOOR_ROW_2_LEFT                = 0x00000010,
+    DOOR_ROW_2_RIGHT               = 0x00000040,
+    DOOR_ROW_3_LEFT                = 0x00000100,
+    DOOR_ROW_3_RIGHT               = 0x00000400,
+    DOOR_HOOD                      = 0x10000000,
+    DOOR_REAR                      = 0x20000000,
+
+};
+
+/**
+ * Various global in the car.
+ */
+enum VendorVehicleAreaGlobal : int32_t {
+    GLOBAL                         = 0x0000,
+
+};
+
+/**
+ * 8797 vendor vehicle property
+ */
+enum VendorVehicleProperty : int32_t {
+    VENDOR_PROPERTY_INVALID = 0x00000000,
+
+    /**
+     * PLGM_TRSWTSTSINDCN_391
+     *
+     * Function Describe: 后尾门开关状态
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:READ
+     * Signal Value:
+        0x0:Door Open
+         0x1:Door Closed
+     */
+    PLGM_TRSWTSTSINDCN_391 = (
+        0x1000
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * S_IDCP_STAMPH_ST_1A0
+     *
+     * Function Describe: 基于2025.1.1偏移毫秒数的高32位
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+     */
+    S_IDCP_STAMPH_ST_1A0 = (
+        0x2000
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * S_IDCP_STAMPL_ST_1A0
+     *
+     * Function Describe: 基于2025.1.1偏移毫秒数的低32位
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+     */
+    S_IDCP_STAMPL_ST_1A0 = (
+        0x2001
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * S_IDCP_FRWDWCTL_REQ_330
+     *
+     * Function Describe: 右前车窗控制指令
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+        0x0:Stop
+         0x1:Up
+         0x2:Down
+         0x3~0x6:Reserved
+         0x7:Invalid
+     */
+    S_IDCP_FRWDWCTL_REQ_330 = (
+        0x2005
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * S_IDCP_RRWDWCTL_REQ_330
+     *
+     * Function Describe: 右后车窗控制指令
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+        0x0:Stop
+         0x1:Up
+         0x2:Down
+         0x3~0x6:Reserved
+         0x7:Invalid
+     */
+    S_IDCP_RRWDWCTL_REQ_330 = (
+        0x2006
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * IDCU_ALM_RED_28
+     *
+     * Function Describe: 氛围灯红色调节
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+     */
+    IDCU_ALM_RED_28 = (
+        0x9000
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * IDCU_ALM_GREEN_28
+     *
+     * Function Describe: 氛围灯绿色调节
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+     */
+    IDCU_ALM_GREEN_28 = (
+        0x9001
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * IDCU_ALM_BLUE_28
+     *
+     * Function Describe: 氛围灯蓝色调节
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+     */
+    IDCU_ALM_BLUE_28 = (
+        0x9002
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * IDCU_ALM_TARGETTRANSITIONTIME_28
+     *
+     * Function Describe: 渐变到目标的时间
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+     */
+    IDCU_ALM_TARGETTRANSITIONTIME_28 = (
+        0x9003
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * IDCU_ALM_FUNCTION_28
+     *
+     * Function Describe: 氛围灯亮灭请求
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+        0x0:OFF
+         0x1:On
+     */
+    IDCU_ALM_FUNCTION_28 = (
+        0x9004
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * IDCU_ALM_MODE_28
+     *
+     * Function Describe: 氛围灯模式请求
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+        0x0:Default
+         0x1:Single 变色模式
+         0x2:Breathe 呼吸模式
+         0x3~0x7: Reserved
+     */
+    IDCU_ALM_MODE_28 = (
+        0x9005
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * IDCU_ALM_TRIGGER_28
+     *
+     * Function Describe: 氛围灯执行触发
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+        0x0:Inactive 不触发
+         0x1:Active 触发
+     */
+    IDCU_ALM_TRIGGER_28 = (
+        0x9006
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+    /**
+     * IDCU_ALM_INTENSITY_28
+     *
+     * Function Describe: 氛围灯亮度调节
+     * VehiclePropertyChangeMode:ON_CHANGE
+     * VehiclePropertyAccess:WRITE
+     * Signal Value:
+     */
+    IDCU_ALM_INTENSITY_28 = (
+        0x9007
+        | VehiclePropertyGroup:VENDOR
+        | VehiclePropertyType:INT32
+        | VehicleArea:GLOBAL),
+
+};

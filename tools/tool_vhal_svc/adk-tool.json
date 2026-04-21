@@ -1,0 +1,79 @@
+{
+  "id": "vhal-svc",
+  "title": "VHAL 表驱动 VehicleService：抓取、生成、部署与编译",
+  "entry": "main.py",
+  "order": 30,
+  "interactive_project_pick": {
+    "config": "config.json",
+    "projects_key": "projects"
+  },
+  "hint": "四步均为强依赖：fetch → generate → deploy → compile；任一步失败则本项目后续步骤跳过且退出码非 0。\nfetch 本地文件名与飞书表格标题一致；generate 用 matrix_file auto 等；deploy.files；凭证同 property。\n无参默认四步全开。",
+  "choices": [
+    {
+      "arg": "list",
+      "desc": "列出 config 中各项目的输入目录、生成目录与部署/编译占位配置，不执行抓取或编译。"
+    },
+    {
+      "arg": "fetch",
+      "desc": "从 feishu.spreadsheet 导出 xlsx 到 input/；本地文件名与飞书在线表格标题一致（经安全化）。"
+    },
+    {
+      "arg": "generate",
+      "desc": "根据 input 中矩阵表生成产物：若配置了 vehicle_generate 则运行 VehicleGenerateTool（QA），并将 Result* 同步到 generate.output_dir；否则占位。"
+    },
+    {
+      "arg": "deploy",
+      "desc": "按 deploy.files 将 output 中的源文件拷到 deploy.repo 下 dest 子目录；先 checkout deploy.branch；不自动 git commit。"
+    },
+    {
+      "arg": "compile",
+      "desc": "（占位）在 config.compile 中填写 args 后执行子进程编译；未配置则仅打印提示。"
+    },
+    {
+      "arg": "fetch generate deploy compile",
+      "desc": "显式串联四步，对全部项目依次执行（与无参默认意图一致，便于看清步进）。"
+    },
+    {
+      "arg": "fetch <项目>",
+      "desc": "仅对指定项目键执行抓取步骤。"
+    },
+    {
+      "arg": "generate <项目>",
+      "desc": "仅对指定项目键执行生成步骤。"
+    },
+    {
+      "arg": "deploy <项目>",
+      "desc": "仅对指定项目键执行部署步骤。"
+    },
+    {
+      "arg": "compile <项目>",
+      "desc": "仅对指定项目键执行编译步骤（需 compile 配置）。"
+    },
+    {
+      "arg": "fetch generate deploy compile <项目>",
+      "desc": "对单一项目执行完整四步流水线。"
+    }
+  ],
+  "examples": [
+    {
+      "arg": "fetch n5x",
+      "desc": "仅拉取 n5x 飞书表到 input/n5x/，文件名为飞书表格标题.xlsx（需飞书环境变量）。"
+    },
+    {
+      "arg": "generate t1v",
+      "desc": "仅对 t1v 跑 VehicleGenerateTool，产物同步到 output/t1v/。"
+    },
+    {
+      "arg": "deploy n80",
+      "desc": "将 output/n80 中 json/proto 按 deploy.files 拷入 BAIC vehicleservice 仓库。"
+    },
+    {
+      "arg": "compile n80",
+      "desc": "对 n80 尝试编译（未配 compile.args 时跳过）。"
+    },
+    {
+      "arg": "fetch generate deploy compile n5x",
+      "desc": "对 n5x 串行跑满 fetch → generate → deploy → compile。"
+    }
+  ]
+}

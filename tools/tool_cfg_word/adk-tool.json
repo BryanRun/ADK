@@ -1,0 +1,76 @@
+{
+  "id": "cfg-word",
+  "title": "整车配置字映射表：生成、更新维护与部署；兼同步 carpropertylist 在线表 psis.car_cfg",
+  "entry": "main.py",
+  "order": 20,
+  "interactive_project_pick": {
+    "config": "config.json",
+    "projects_key": "projects"
+  },
+  "default_pipeline_banner": "[bold yellow]★ 推荐 · 默认操作[/bold yellow]  [bold white]直接回车[/bold white]：对已选项目执行 [bold green]完整流水线[/bold green] — [bold]parse → sync → validate → property-sync → generate → deploy[/bold]，与命令 [dim]python main.py <项目>[/dim]（无额外参数）等价。",
+  "hint": "下列内容将作为参数传给本工具目录下的 [bold]main.py[/]（与在该目录执行 [dim]python main.py …[/dim] 完全一致）。\n若上一步已选择项目，可直接 [bold]回车[/] 跑满全流程；也可输入下表中的命令片段（已选项目时通常可省略行末的项目名）。",
+  "choices": [
+    {
+      "arg": "(无参数，仅项目名)",
+      "desc": "默认：跑完整流水线（parse → sync → validate → property-sync → generate → deploy）。交互中已选项目时，回车即可。"
+    },
+    {
+      "arg": "list",
+      "desc": "列出 config 中全部项目：本地最新 Excel、解析器、飞书子表、Property 表与部署路径（不跑解析/同步）。"
+    },
+    {
+      "arg": "feishu-sheets",
+      "desc": "列出顶层 feishu 文档中所有子表标题与 sheet_id，便于填写各项目的 feishu_sheet_name。"
+    },
+    {
+      "arg": "init-mapping <项目>",
+      "desc": "从飞书中间表拉取中英文映射，写入 name_mapping.json（需网络与文档权限）。"
+    },
+    {
+      "arg": "parse [项目]",
+      "desc": "仅解析本地 Excel 为内存结构，不写飞书、不生成头文件。"
+    },
+    {
+      "arg": "sync [项目]",
+      "desc": "将解析结果同步到飞书中间表（常与 parse 同条命令连用）。"
+    },
+    {
+      "arg": "validate [项目]",
+      "desc": "校验 BYTE/BIT 与 vehicle_config_byte_count（已在流水线中默认执行）。"
+    },
+    {
+      "arg": "property-sync [项目]",
+      "desc": "增量同步到 carpropertylist 侧 psis.car_cfg 子表（弱依赖，失败不阻断后续）。"
+    },
+    {
+      "arg": "generate [项目]",
+      "desc": "生成 output/<项目>/cfg_cal.h 等（常与 parse 同条命令连用）。"
+    },
+    {
+      "arg": "deploy [项目]",
+      "desc": "将已生成文件拷贝到配置的 Git 仓库路径（可不依赖当次 parse）。"
+    },
+    {
+      "arg": "parse sync validate property-sync generate deploy <项目>",
+      "desc": "显式指定全流程动作与项目（与默认回车等价，仅处理所列项目）。"
+    }
+  ],
+  "examples": [
+    {
+      "arg": "init-mapping n50",
+      "desc": "仅为 n50 初始化/更新 name_mapping（将 n50 换成你的项目键）。"
+    },
+    {
+      "arg": "parse n50",
+      "desc": "仅解析 n50，不跑同步与生成。"
+    },
+    {
+      "arg": "parse sync validate n50",
+      "desc": "解析 → 飞书中间表 → 校验（不跑 property-sync / generate / deploy）。"
+    },
+    {
+      "arg": "n50",
+      "desc": "仅输入项目名：与无参等价，跑满全流程（推荐）。"
+    }
+  ]
+}

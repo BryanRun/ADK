@@ -1,0 +1,47 @@
+{
+    "projects": {
+        "BAIC": {
+            "description": "北汽 BQ_8775 CarProperty 配置",
+            "excel_pattern": "car_property_list_bq_8775",
+            "spreadsheet_token": "https://t83dfrspj4.feishu.cn/sheets/DN95s3UyDhNOOutinLrcyxAKnEf?sheet=1MpyWb",
+            "variant_names": {
+                "n50": "base",
+                "n51": "base",
+                "n80": "n80"
+            },
+            "deploy": {
+                "repo": "~/BAIC_8775/n50_al_dev/qnx/vendor/autolink/frameworks/cm",
+                "branch": "al_dev",
+                "targets": {
+                    "n50": "carpropertymanager/impl/common/generated/n50",
+                    "n51": "carpropertymanager/impl/common/generated/n51",
+                    "n80": "carpropertymanager/impl/common/generated/n80"
+                }
+            }
+        },
+        "T1V": {
+            "description": "捷途 Jetour T1V CarProperty 配置",
+            "excel_pattern": "car_property_list_chery_8775",
+            "spreadsheet_token": "https://t83dfrspj4.feishu.cn/wiki/FKBewbQJiioQZ4kRZbKcSo1enfd?sheet=1MpyWb",
+            "deploy": {
+                "repo": "~/Jetour_T1V_8775/qnx/vendor/autolink/frameworks/cm",
+                "branch": "al_chery-t1v_dev",
+                "targets": {
+                    "t1v": "carpropertymanager/impl/common/generated/t1v"
+                }
+            }
+        },
+        "M1FA": {
+            "description": "奇瑞 Cherry M1FA CarProperty 配置",
+            "excel_pattern": "car_property_list_chery_m1fa_8155",
+            "spreadsheet_token": "https://t83dfrspj4.feishu.cn/wiki/GtvXwZ66UiGg6MkHBdAcoxUinDb?sheet=5VyymQ",
+            "deploy": {
+                "repo": "",
+                "branch": "al_chery-m1fa_dev",
+                "targets": {
+                    "m1fa": "carpropertymanager/impl/common/generated/m1fa"
+                }
+            }
+        }
+    }
+}

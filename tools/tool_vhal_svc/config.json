@@ -1,0 +1,116 @@
+{
+  "description": "vhal-svc：VHAL 矩阵飞书 fetch → VehicleGenerateTool 生成 → 指定 json/proto 部署到 vehicleservice 仓库",
+  "projects": {
+    "n5x": {
+      "description": "北汽 N50 系 VHAL（project_code N50）；飞书表 + 部署至 BAIC vehicleservice 的 n50 与 n51 两套目录",
+      "input": { "dir": "input/n5x" },
+      "feishu": {
+        "spreadsheet": "https://t83dfrspj4.feishu.cn/sheets/PvBxsSOVshEyuztjCcAcvKacn6e?sheet=2a0314"
+      },
+      "vehicle_generate": {
+        "script": "vehicle_generate_tool_QA.py",
+        "matrix_file": "auto",
+        "map_sheet": "releaseMap",
+        "project_code": "N50"
+      },
+      "generate": {
+        "output_dir": "output/n5x",
+        "copy_result_dir": true
+      },
+      "deploy": {
+        "repo": "~/BAIC_8775/n50_al_dev/qnx/vendor/autolink/hal/vehicleservice/",
+        "branch": "al_dev",
+        "files": [
+          { "source": "vehicle_prop_config.json", "dest": "etc/n50" },
+          { "source": "vehicle_prop_value.json", "dest": "etc/n50" },
+          { "source": "autolink.alc.signal.pb.proto", "dest": "vehicleclient/proto/n50" },
+          { "source": "vehicle_prop_config.json", "dest": "etc/n51" },
+          { "source": "vehicle_prop_value.json", "dest": "etc/n51" },
+          { "source": "autolink.alc.signal.pb.proto", "dest": "vehicleclient/proto/n51" }
+        ]
+      },
+      "compile": { "cwd": "", "args": [] }
+    },
+    "n80": {
+      "description": "北汽 N80 VHAL；飞书表 + 同仓库 vehicleservice",
+      "input": { "dir": "input/n80" },
+      "feishu": {
+        "spreadsheet": "https://t83dfrspj4.feishu.cn/sheets/TikJsCgZbhT1QbtAwptcTmfcnMd?sheet=2a0314"
+      },
+      "vehicle_generate": {
+        "script": "vehicle_generate_tool_QA.py",
+        "matrix_file": "auto",
+        "map_sheet": "releaseMap",
+        "project_code": "N80"
+      },
+      "generate": {
+        "output_dir": "output/n80",
+        "copy_result_dir": true
+      },
+      "deploy": {
+        "repo": "~/BAIC_8775/n50_al_dev/qnx/vendor/autolink/hal/vehicleservice/",
+        "branch": "al_dev",
+        "files": [
+          { "source": "vehicle_prop_config.json", "dest": "etc/n80" },
+          { "source": "vehicle_prop_value.json", "dest": "etc/n80" },
+          { "source": "autolink.alc.signal.pb.proto", "dest": "vehicleclient/proto/n80" }
+        ]
+      },
+      "compile": { "cwd": "", "args": [] }
+    },
+    "t1v": {
+      "description": "捷途 T1V VHAL（知识库挂载表）；project_code T1V",
+      "input": { "dir": "input/t1v" },
+      "feishu": {
+        "spreadsheet": "https://t83dfrspj4.feishu.cn/wiki/WqkVw1GnYiwQrlkOF2EcZRdnnTs?sheet=2a0314"
+      },
+      "vehicle_generate": {
+        "script": "vehicle_generate_tool_QA.py",
+        "matrix_file": "auto",
+        "map_sheet": "releaseMap",
+        "project_code": "T1V"
+      },
+      "generate": {
+        "output_dir": "output/t1v",
+        "copy_result_dir": true
+      },
+      "deploy": {
+        "repo": "~/Jetour_T1V_8775/qnx/vendor/autolink/hal/vehicleservice/",
+        "branch": "al_chery-t1v_dev",
+        "files": [
+          { "source": "vehicle_prop_config.json", "dest": "etc/t1v" },
+          { "source": "vehicle_prop_value.json", "dest": "etc/t1v" },
+          { "source": "autolink.alc.signal.pb.proto", "dest": "vehicleclient/proto/t1v" }
+        ]
+      },
+      "compile": { "cwd": "", "args": [] }
+    },
+    "8797_poc": {
+      "description": "8797_poc 北京车展 — VHAL（飞书 sheet a6WdKs）；project_code 8797；部署至 AS_8797_poc vehicleservice",
+      "input": { "dir": "input/8797_poc" },
+      "feishu": {
+        "spreadsheet": "https://t83dfrspj4.feishu.cn/sheets/U0O6sAHXXhVpWKtBWp7clzWnnHe?sheet=a6WdKs&302from=wiki"
+      },
+      "vehicle_generate": {
+        "script": "vehicle_generate_tool_QA.py",
+        "matrix_file": "auto",
+        "map_sheet": "releaseMap",
+        "project_code": "8797"
+      },
+      "generate": {
+        "output_dir": "output/8797_poc",
+        "copy_result_dir": true
+      },
+      "deploy": {
+        "repo": "~/AS_8797_poc/qnx/vendor/autolink/hal/vehicleservice/",
+        "branch": "al_as2.0_dev",
+        "files": [
+          { "source": "vehicle_prop_config.json", "dest": "files" },
+          { "source": "vehicle_prop_value.json", "dest": "files" },
+          { "source": "autolink.alc.signal.pb.proto", "dest": "vehicleclient/proto" }
+        ]
+      },
+      "compile": { "cwd": "", "args": [] }
+    }
+  }
+}

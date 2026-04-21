@@ -1,0 +1,65 @@
+{
+    "feishu_document": "https://t83dfrspj4.feishu.cn/sheets/NC9GsxyTJhLqU5tPHkOcTnKInFR",
+    "projects": {
+        "n50": {
+            "description": "北汽 N50/N51 配置字 (ACIC 控制器)",
+            "vehicle_config_byte_count": 24,
+            "input": {
+                "dir": "input/BAIC/n50",
+                "sheet": "N5系控制器配置字",
+                "parser": "n5_baic_acic"
+            },
+            "feishu_sheet_name": "n50",
+            "bit_order": "reverse",
+            "deploy": {
+                "repo": "~/BAIC_8775/n50_al_dev/qnx/vendor/autolink/frameworks/cm",
+                "branch": "al_dev",
+                "target": "carpropertymanager/impl/common/generated/n50"
+            },
+            "property_sync": {
+                "spreadsheet": "https://t83dfrspj4.feishu.cn/sheets/DN95s3UyDhNOOutinLrcyxAKnEf",
+                "sheet_name": "psis.car_cfg"
+            }
+        },
+        "n80": {
+            "description": "北汽 N80 配置字",
+            "vehicle_config_byte_count": 24,
+            "input": {
+                "dir": "input/BAIC/n80",
+                "sheet": "ICC配置码表",
+                "parser": "baic_n80_icc"
+            },
+            "feishu_sheet_name": "n80",
+            "bit_order": "normal",
+            "deploy": {
+                "repo": "~/BAIC_8775/n50_al_dev/qnx/vendor/autolink/frameworks/cm",
+                "branch": "al_dev",
+                "target": "carpropertymanager/impl/common/generated/n80"
+            },
+            "property_sync": {
+                "spreadsheet": "https://t83dfrspj4.feishu.cn/sheets/DN95s3UyDhNOOutinLrcyxAKnEf",
+                "sheet_name": "psis.car_cfg.n80"
+            }
+        },
+        "t1v": {
+            "description": "捷途 T1V 配置字",
+            "vehicle_config_byte_count": 900,
+            "input": {
+                "dir": "input/Jetour/t1v",
+                "sheet": "03.3.Coding DID",
+                "parser": "jetour_t1v_coding"
+            },
+            "feishu_sheet_name": "t1v",
+            "bit_order": "normal",
+            "deploy": {
+                "repo": "~/Jetour_T1V_8775/qnx/vendor/autolink/frameworks/cm",
+                "branch": "al_chery-t1v_dev",
+                "target": "carpropertymanager/impl/common/generated/t1v"
+            },
+            "property_sync": {
+                "spreadsheet": "https://t83dfrspj4.feishu.cn/wiki/FKBewbQJiioQZ4kRZbKcSo1enfd",
+                "sheet_name": "psis.car_cfg"
+            }
+        }
+    }
+}

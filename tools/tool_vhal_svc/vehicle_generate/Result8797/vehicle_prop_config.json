@@ -1,0 +1,199 @@
+{
+    "propConfig": [
+        {
+            "propId": 4096,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 1,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 1
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 8192,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 2147483647
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 8193,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 2147483647
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 8197,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 7
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 8198,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 7
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 36864,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 255
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 36865,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 255
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 36866,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 255
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 36867,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 1000,
+                    "maxValue": 4095
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 36868,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 1
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 36869,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 7
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 36870,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 1
+                }
+            ],
+            "osTarget": 3
+        },
+        {
+            "propId": 36871,
+            "areaType": 1,
+            "valueType": 2,
+            "access": 2,
+            "changeMode": 1,
+            "areaCfg": [
+                {
+                    "areaId": 0,
+                    "minValue": 0,
+                    "maxValue": 100
+                }
+            ],
+            "osTarget": 3
+        }
+    ]
+}

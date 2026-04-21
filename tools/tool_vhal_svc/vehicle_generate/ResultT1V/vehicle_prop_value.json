@@ -1,0 +1,2734 @@
+{
+    "propValue": [
+        {
+            "propId": 4098,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4106,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 65535,
+            "size": 0
+        },
+        {
+            "propId": 4129,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4130,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4131,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4144,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4148,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 16383,
+            "size": 0
+        },
+        {
+            "propId": 4150,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4153,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4154,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4155,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4160,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4161,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4162,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4177,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4178,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4179,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4180,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4181,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4182,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4183,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4184,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4186,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4187,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4188,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4189,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 3,
+            "size": 0
+        },
+        {
+            "propId": 4193,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4196,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4197,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4199,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4218,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4219,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4220,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4221,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4222,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4225,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4227,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4239,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4242,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4243,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4244,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4245,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4251,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4252,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4255,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4256,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4408,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4410,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4411,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4412,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4414,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4421,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4423,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4424,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4426,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4427,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4431,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4434,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4441,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4443,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4445,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4496,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4497,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4525,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4540,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4584,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4585,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4587,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 65535,
+            "size": 0
+        },
+        {
+            "propId": 4591,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 32767,
+            "size": 0
+        },
+        {
+            "propId": 4592,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 1,
+            "size": 0
+        },
+        {
+            "propId": 4601,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4604,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4607,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4611,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4613,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4614,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4618,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4625,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4627,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4628,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4633,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4634,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4635,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4636,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4639,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4640,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4642,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4643,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4645,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 127,
+            "size": 0
+        },
+        {
+            "propId": 4655,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4656,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4657,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4658,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4659,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4660,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4661,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4663,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4664,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4665,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4668,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4670,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4671,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4674,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4748,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 16383,
+            "size": 0
+        },
+        {
+            "propId": 4751,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4761,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4762,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4763,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4764,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4765,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4780,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4781,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4782,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4783,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4785,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4786,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4787,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4788,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4793,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 1,
+            "size": 0
+        },
+        {
+            "propId": 4795,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 1,
+            "size": 0
+        },
+        {
+            "propId": 4802,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4803,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4804,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4807,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4810,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4811,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4812,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4813,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4819,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4820,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4821,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4822,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4823,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4827,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4828,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4830,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4833,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4834,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4835,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4836,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4837,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4839,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4842,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4844,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4848,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4849,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4852,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4853,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4854,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4857,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4858,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4860,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4861,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4863,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4865,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4866,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4867,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4868,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4871,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4872,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4873,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4876,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4879,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4881,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4884,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4885,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4886,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4887,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4888,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4890,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 2,
+            "size": 0
+        },
+        {
+            "propId": 4893,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4894,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4898,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4900,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4905,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4906,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4907,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4908,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4909,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4917,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 4973,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5083,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5085,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5090,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5091,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 31,
+            "size": 0
+        },
+        {
+            "propId": 5094,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5098,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5100,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5104,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5113,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5114,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5121,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5147,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 31,
+            "size": 0
+        },
+        {
+            "propId": 5170,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5171,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 1,
+            "size": 0
+        },
+        {
+            "propId": 5172,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5173,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5174,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5175,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5176,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5177,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5178,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5223,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5224,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 225,
+            "size": 0
+        },
+        {
+            "propId": 5225,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 254,
+            "size": 0
+        },
+        {
+            "propId": 5226,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5241,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5266,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5272,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 3,
+            "size": 0
+        },
+        {
+            "propId": 5273,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5274,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5275,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5276,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5277,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5278,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5281,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5285,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5286,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5287,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5288,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5289,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5290,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5291,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5294,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5298,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5303,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5306,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5307,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5312,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5313,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5317,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5320,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 31,
+            "size": 0
+        },
+        {
+            "propId": 5321,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 31,
+            "size": 0
+        },
+        {
+            "propId": 5322,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 5,
+            "size": 0
+        },
+        {
+            "propId": 5323,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 1,
+            "size": 0
+        },
+        {
+            "propId": 5324,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 254,
+            "size": 0
+        },
+        {
+            "propId": 5338,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5357,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5358,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5360,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5364,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5365,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5366,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5367,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5368,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5369,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5370,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5371,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5372,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5374,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5375,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5376,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5377,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5379,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5380,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5381,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5382,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5383,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5384,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 127,
+            "size": 0
+        },
+        {
+            "propId": 5385,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 1,
+            "size": 0
+        },
+        {
+            "propId": 5386,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5389,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 255,
+            "size": 0
+        },
+        {
+            "propId": 5398,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5399,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5401,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5408,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5410,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5412,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5423,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5424,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 1,
+            "size": 0
+        },
+        {
+            "propId": 5431,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5437,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5438,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5439,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5441,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5497,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5498,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5499,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5501,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5502,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5503,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5525,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 255,
+            "size": 0
+        },
+        {
+            "propId": 5526,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 65534,
+            "size": 0
+        },
+        {
+            "propId": 5527,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 255,
+            "size": 0
+        },
+        {
+            "propId": 5528,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 65534,
+            "size": 0
+        },
+        {
+            "propId": 5529,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5530,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5533,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5535,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5537,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5539,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5552,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5553,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5556,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5557,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5558,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5559,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5560,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5561,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5562,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5563,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5566,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5568,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5760,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5762,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5830,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5839,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5841,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 255,
+            "size": 0
+        },
+        {
+            "propId": 5842,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 255,
+            "size": 0
+        },
+        {
+            "propId": 5843,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5855,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5856,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5857,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5858,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5859,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5860,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5867,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 65535,
+            "size": 0
+        },
+        {
+            "propId": 5868,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 65535,
+            "size": 0
+        },
+        {
+            "propId": 5920,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5921,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5923,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5927,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5928,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5930,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5931,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5932,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5934,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5942,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5944,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5947,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5948,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5949,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5950,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5952,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5953,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5955,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5956,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5957,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5958,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5961,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5963,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5964,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5965,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5966,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5967,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5968,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5970,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5972,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5977,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5981,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5982,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5983,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5984,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5985,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5989,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5991,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 5997,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6001,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6004,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6017,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6018,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6019,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6020,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6021,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6022,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6023,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6024,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6053,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6054,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6055,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6056,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6057,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6058,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6064,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 62,
+            "size": 0
+        },
+        {
+            "propId": 6065,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 62,
+            "size": 0
+        },
+        {
+            "propId": 6066,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 62,
+            "size": 0
+        },
+        {
+            "propId": 6067,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 62,
+            "size": 0
+        },
+        {
+            "propId": 6068,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 30,
+            "size": 0
+        },
+        {
+            "propId": 6069,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 30,
+            "size": 0
+        },
+        {
+            "propId": 6071,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 30,
+            "size": 0
+        },
+        {
+            "propId": 6073,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 30,
+            "size": 0
+        },
+        {
+            "propId": 6078,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6155,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 6156,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 32767,
+            "size": 0
+        },
+        {
+            "propId": 6157,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 10240,
+            "size": 0
+        },
+        {
+            "propId": 7384,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 0,
+            "size": 0
+        },
+        {
+            "propId": 7443,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 65535,
+            "size": 0
+        },
+        {
+            "propId": 7444,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 65535,
+            "size": 0
+        },
+        {
+            "propId": 7452,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 255,
+            "size": 0
+        },
+        {
+            "propId": 7453,
+            "valueType": 2,
+            "areaId": 0,
+            "initialValue": 255,
+            "size": 0
+        }
+    ]
+}

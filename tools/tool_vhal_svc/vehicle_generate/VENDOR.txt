@@ -1,0 +1,6 @@
+内嵌来源（与核心逻辑一致，便于 ADK 内调用）：
+  1_ToolChain/0_AutoDriveKit/todos/T1V/VehicleGenerateTool/AutolinkVehicleIF/autolink/
+    - vehicle_generate_tool_QA.py
+    - template/
+
+若上游矩阵工具升级，请同步替换上述文件以保持生成结果一致。

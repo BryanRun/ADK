@@ -1,0 +1,43 @@
+{
+  "id": "property",
+  "title": "车辆属性（CarProperty）生成与导入",
+  "entry": "main.py",
+  "order": 10,
+  "interactive_project_pick": {
+    "config": "config.json",
+    "projects_key": "projects"
+  },
+  "hint": "无参时通常执行 fetch + generate + deploy（以 config.json 中项目为准）。\n若上一步已在交互菜单中选择项目，可直接回车对该项跑完整流水线；也可输入下表命令片段（已选项目时多数可省略行末项目名）。\n下列「参数选择」为通用写法；「参数示例」演示带项目名；每条下方为能力说明。",
+  "choices": [
+    {
+      "arg": "list",
+      "desc": "列出所有已配置项目：飞书表链接、input 最新 Excel、各变体 deploy 路径与分支等状态，不执行下载或生成。"
+    },
+    {
+      "arg": "fetch",
+      "desc": "仅从飞书拉取各项目在线属性表到本地 input/（按项目目录存放），不生成代码、不部署。"
+    },
+    {
+      "arg": "generate",
+      "desc": "仅根据 input/ 中已有 Excel 生成 C/C++ 头文件等到 output/，不拉表、不部署（若未先 fetch 则可能无新表）。"
+    },
+    {
+      "arg": "deploy",
+      "desc": "仅将 output/ 中已生成文件增量同步到各项目配置的 Git 仓库目标路径，不拉表、不重新生成。"
+    },
+    {
+      "arg": "fetch generate deploy",
+      "desc": "显式串联三步：拉表 → 生成 → 部署；对 config 中全部项目生效，与多数场景下无参默认行为一致。"
+    }
+  ],
+  "examples": [
+    {
+      "arg": "BAIC",
+      "desc": "仅针对 BAIC 项目执行完整默认流水线（fetch + generate + deploy），其它项目不处理。"
+    },
+    {
+      "arg": "fetch generate BAIC",
+      "desc": "仅对 BAIC 执行拉表与生成，不执行 deploy，适合先本地检查生成结果再手动部署。"
+    }
+  ]
+}

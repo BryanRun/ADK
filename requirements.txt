@@ -1,0 +1,6 @@
+# 与 pyproject.toml [project.dependencies] 保持一致，便于 pip install -r requirements.txt
+typer>=0.9.0
+rich>=13.0.0
+openpyxl
+jinja2
+requests

@@ -1,0 +1,1 @@
+%(android_int32vec_prop)s

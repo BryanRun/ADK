@@ -1,0 +1,78 @@
+/**
+ * %(projectName)s vendor vehicle property
+ * THIS FILE IS AUTO-GENERATED. DO NOT EDIT
+ */
+
+package vendor.autolink.automotive.vehicle@2.0;
+
+import android.hardware.automotive.vehicle@2.0;
+
+typedef android.hardware.automotive.vehicle@2.0::VehiclePropertyGroup VehiclePropertyGroup;
+typedef android.hardware.automotive.vehicle@2.0::VehicleArea VehicleArea;
+typedef android.hardware.automotive.vehicle@2.0::VehiclePropertyType VehiclePropertyType;
+
+enum VendorSignalProperty : int32_t {
+    VENDOR_PROPERTY_INVALID = 0x00000000,
+%(g_types_hal_list)s
+    /**
+     * Property to control power state of application processor
+     *
+     * It is assumed that AP's power state is controlled by a separate power
+     * controller.
+     *
+     * For configuration information, VehiclePropConfig.configArray can have bit flag combining
+     * values in VehicleApPowerStateConfigFlag.
+     *
+     *   int32Values[0] : VehicleApPowerStateReq enum value
+     *   int32Values[1] : additional parameter relevant for each state,
+     *                    0 if not used.
+     *
+     * @change_mode VehiclePropertyChangeMode:ON_CHANGE
+     * @access VehiclePropertyAccess:READ
+     */
+    AP_POWER_STATE_REQ = (
+        0x0A00
+        | VehiclePropertyGroup:SYSTEM
+        | VehiclePropertyType:INT32_VEC
+        | VehicleArea:GLOBAL),
+
+    /**
+     * Property to report power state of application processor
+     *
+     * It is assumed that AP's power state is controller by separate power
+     * controller.
+     *
+     *   int32Values[0] : VehicleApPowerStateReport enum value
+     *   int32Values[1] : Time in ms to wake up, if necessary.  Otherwise 0.
+
+     *
+     * @change_mode VehiclePropertyChangeMode:ON_CHANGE
+     * @access VehiclePropertyAccess:READ_WRITE
+     */
+    AP_POWER_STATE_REPORT = (
+        0x0A01
+        | VehiclePropertyGroup:SYSTEM
+        | VehiclePropertyType:INT32_VEC
+        | VehicleArea:GLOBAL),
+
+    /**
+     * Property to feed H/W input events to android
+     *
+     * int32Values[0] : action defined by VehicleHwKeyInputAction
+     * int32Values[1] : key code, must use standard android key code
+     * int32Values[2] : target display defined in VehicleDisplay. Events not
+     *                  tied to specific display must be sent to
+     *                  VehicleDisplay#MAIN.
+     * int32Values[3] : [optional] Number of ticks. The value must be equal or
+     *                  greater than 1. When omitted, Android will default to 1.
+     *
+     * @change_mode VehiclePropertyChangeMode:ON_CHANGE
+     * @access VehiclePropertyAccess:READ
+     * @config_flags
+     */
+    HW_KEY_INPUT = (
+        0x0A10
+        | VehiclePropertyGroup:SYSTEM
+        | VehiclePropertyType:INT32_VEC
+        | VehicleArea:GLOBAL),
+};

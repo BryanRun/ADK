@@ -1,0 +1,64 @@
+/******************************************************************************
+/                              Copyright
+/------------------------------------------------------------------------------
+*******************************************************************************/
+
+
+package vendor.autolink.vehiclehal@%(version)s;
+
+import android.hardware.automotive.vehicle@2.0;
+
+enum VendorVehicleArea : int32_t {
+%(VendorVehicleArea)s
+    MASK                           = 0x0f000000,
+};
+
+/**
+ * Various body in the car.
+ */
+enum VendorVehicleAreaBody : int32_t {
+%(VendorVehicleAreaBody)s
+};
+
+/**
+ * Various seat in the car.
+ */
+enum VendorVehicleAreaSeat : int32_t {
+%(VendorVehicleAreaSeat)s
+};
+
+/**
+ * Various mirror in the car.
+ */
+enum VendorVehicleAreaMirror : int32_t {
+%(VendorVehicleAreaMirror)s
+};
+
+/**
+ * Various window in the car.
+ */
+enum VendorVehicleAreaWindow : int32_t {
+%(VendorVehicleAreaWindow)s
+};
+
+/**
+ * Various door in the car.
+ */
+enum VendorVehicleAreaDoor : int32_t {
+%(VendorVehicleAreaDoor)s
+};
+
+/**
+ * Various global in the car.
+ */
+enum VendorVehicleAreaGlobal : int32_t {
+%(VendorVehicleAreaGlobal)s
+};
+
+/**
+ * %(projectName)s vendor vehicle property
+ */
+enum VendorVehicleProperty : int32_t {
+    VENDOR_PROPERTY_INVALID = 0x00000000,
+%(g_types_hal_list)s
+};
