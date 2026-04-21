@@ -101,6 +101,14 @@ def update_command(
         raise typer.Exit(1)
 
 
+@app.command("doctor", rich_help_panel=ADK_GENERAL_OPTIONS_PANEL_TITLE)
+def doctor_command() -> None:
+    """体检平台配置、工具配置一致性、环境变量与依赖，并给出修复建议。"""
+    from autodrivekit.doctor import run_doctor
+
+    run_doctor()
+
+
 def _run_tool(main_py: str, passthrough: list[str]) -> NoReturn:
     env = os.environ.copy()
     env["AUTODRIVEKIT_USER_CONFIG_DIR"] = str(user_config_dir())
