@@ -121,6 +121,33 @@ def _atomic_switch_current(new_release: Path) -> None:
     os.replace(tmp, cur)
 
 
+def _ensure_adk_entry_point() -> None:
+    """确保 ~/.local/bin/adk 指向 managed install 的 adk_launch.py。
+
+    若 adk 入口是 pip 生成的脚本（非符号链接），则替换为指向
+    current/adk_launch.py 的符号链接，使 adk update 后命令立即生效。
+    """
+    bin_dir = Path.home() / ".local" / "bin"
+    adk_bin = bin_dir / "adk"
+    launch = managed_current_link() / "adk_launch.py"
+    if not launch.exists():
+        return
+    try:
+        if adk_bin.is_symlink():
+            target = adk_bin.resolve()
+            # 已经指向 managed install 中的 adk_launch.py，无需处理
+            if "adk_launch.py" in target.name:
+                return
+        # 替换为符号链接（无论原来是 pip 脚本还是其他符号链接）
+        if adk_bin.exists() or adk_bin.is_symlink():
+            adk_bin.unlink()
+        bin_dir.mkdir(parents=True, exist_ok=True)
+        os.symlink(launch, adk_bin)
+        typer.echo(f"  已将 {adk_bin} 指向 {launch}")
+    except OSError as e:
+        typer.echo(f"  警告：无法更新 {adk_bin}：{e}", err=True)
+
+
 def run_update(*, dry_run: bool, check_only: bool) -> None:
     token = get_tenant_access_token()
     if not token:
@@ -200,10 +227,10 @@ def run_update(*, dry_run: bool, check_only: bool) -> None:
         shutil.move(str(root), str(rel))
 
         _atomic_switch_current(rel)
+        _ensure_adk_entry_point()
         typer.echo(f"  已安装到 {rel}，并已切换 {managed_current_link()} 指向该版本。")
         typer.echo(
-            "  请将 PATH 优先包含解压树中的启动入口（见仓库根 adk_launch.py），"
-            "或在新根目录执行 pip install -e .；配置迁移将在下次运行 adk（非 update）时执行。"
+            "  配置迁移将在下次运行 adk（非 update）时执行。"
         )
     finally:
         _release_update_lock(lock_fp)
