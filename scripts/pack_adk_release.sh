@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# 将当前 AutoDriveKit 源码树打成发布 tar.gz，输出到开发路径上一层的 adk-releases/。
+# 将当前 AutoDriveKit 源码树打成发布 tar.gz，输出到仓库根目录下的 release/。
 # 用法：在仓库根执行  ./scripts/pack_adk_release.sh
 
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-REL="$(cd "$ROOT/.." && pwd)/adk-releases"
+REL="$ROOT/release"
 VERSION="$(grep -m1 '^version' "$ROOT/pyproject.toml" | sed 's/.*= *"\(.*\)".*/\1/')"
 NAME="autodrivekit-${VERSION}.tar.gz"
 OUT="$REL/$NAME"
@@ -26,6 +26,7 @@ tar -czf "$OUT" \
   --exclude='./.mypy_cache' \
   --exclude='./dist' \
   --exclude='./build' \
+  --exclude='./release' \
   .
 
 sha256sum "$OUT" | awk '{print $1 "  '"$NAME"'"}' > "$REL/${NAME}.sha256"

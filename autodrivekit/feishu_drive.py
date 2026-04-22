@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gzip
 import json
 from pathlib import Path
 from typing import Any
@@ -54,6 +55,9 @@ def _wiki_get_node(tenant_token: str, node_token: str, *, timeout: int = 60) -> 
 
 
 def _parse_downloaded_json(content: bytes) -> Any:
+    # 飞书 CDN 有时返回 gzip 压缩内容但 requests 未自动解压，需手动处理
+    if content[:2] == b"\x1f\x8b":
+        content = gzip.decompress(content)
     try:
         obj: Any = json.loads(content.decode("utf-8"))
     except json.JSONDecodeError as e:

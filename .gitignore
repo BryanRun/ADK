@@ -1,0 +1,38 @@
+# Python 构建/缓存产物
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# 编辑器 / 操作系统
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# 本地环境/敏感配置
+.env
+.env.local
+*.pem
+
+# 工具运行时产物（历史已入库的 output/ 暂不处理，这里只防新增）
+tools/*/.build/
+tools/*/tmp/
+
+# 发布产物（打包、manifest 等，不入库）
+release/
+
+# 备份文件
+*.bak
+*.bak.[0-9]*.json
+*.corrupt.[0-9]*.json

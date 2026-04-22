@@ -70,7 +70,7 @@ def main() -> None:
     ap.add_argument(
         "--release-dir",
         type=Path,
-        default=ROOT.parent / "adk-releases",
+        default=ROOT / "release",
         help="发布目录",
     )
     ap.add_argument(
