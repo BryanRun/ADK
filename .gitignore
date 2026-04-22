@@ -29,6 +29,9 @@ Thumbs.db
 tools/*/.build/
 tools/*/tmp/
 
+# 发布产物（打包、manifest 等，不入库）
+release/
+
 # 备份文件
 *.bak
 *.bak.[0-9]*.json

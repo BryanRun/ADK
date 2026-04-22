@@ -15,7 +15,7 @@
   ADK_RELEASE_PARENT_FOLDER_TOKEN — 上传 manifest JSON 时的目标文件夹；不设则用云空间根目录。
 
 输出：
-  <adk-releases>/manifest-<version>.json
+  release/manifest-<version>.json
 
 默认将 manifest JSON 上传到云空间并打印 file_token（便于写入 adk.json 覆盖默认 wiki manifest）。
 """
@@ -61,8 +61,8 @@ def main() -> None:
     ap.add_argument(
         "--release-dir",
         type=Path,
-        default=ROOT.parent / "adk-releases",
-        help="发布目录（默认：仓库上一层的 adk-releases）",
+        default=ROOT / "release",
+        help="发布目录（默认：仓库根目录下的 release/）",
     )
     ap.add_argument(
         "--archive",

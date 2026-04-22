@@ -268,7 +268,7 @@ $env:FEISHU_APP_SECRET="你的AppSecret"
 
 - **`adk` 子进程环境变量**：`AUTODRIVEKIT_USER_CONFIG_DIR`（默认 `~/.config/adk`）、`AUTODRIVEKIT_USER_DATA_DIR`（默认 `~/.local/share/adk`）。各工具 **`config.json`** 落在前者下以 **`tool_*`** 目录名命名的子目录；**`input/`、`output/`** 等可变数据落在后者下同名子目录；首次缺失时从包内默认文件复制（详见根 [README.md](../README.md)「用户配置 / 数据目录（4A）」）。  
 - **平台级 `adk.json`**：路径为 **`~/.config/adk/adk.json`**（或 `XDG_CONFIG_HOME` 下 **`adk/adk.json`**），可配置 **`feishu_update.manifest_file_token`** 等；若其中 **`manifest_file_token`** 仍指向旧节点（如已废弃的 docx 页），会覆盖代码内置默认，导致 **`adk update`** 行为与预期不符——清空该字段即可回退到 **`DEFAULT_MANIFEST_FILE_TOKEN`**。  
-- **`adk update`**：从飞书拉取 **manifest（JSON）** 与 **制品压缩包**；manifest 默认来自知识库 **「文件」** 节点（常量见 **`autodrivekit.config_migrate`**），制品节点与 manifest 内 **`archive_file_token`** 对齐；亦支持 Drive `file_token`、**`ADK_FEISHU_MANIFEST_FILE_TOKEN`** 覆盖。完整字段表、双节点链接、**`sha256`** 与 **`adk-releases/`** 发布脚本（**`scripts/pack_adk_release.sh`** 等）见根 [README.md](../README.md) 同章。
+- **`adk update`**：从飞书拉取 **manifest（JSON）** 与 **制品压缩包**；manifest 默认来自知识库 **「文件」** 节点（常量见 **`autodrivekit.config_migrate`**），制品节点与 manifest 内 **`archive_file_token`** 对齐；亦支持 Drive `file_token`、**`ADK_FEISHU_MANIFEST_FILE_TOKEN`** 覆盖。完整字段表、双节点链接、**`sha256`** 与 ****`release/`** 发布脚本（**`scripts/pack_adk_release.sh`** 等）见根 [README.md](../README.md) 同章。
 
 ### 4.6 安装验证（截图位）
 

@@ -100,8 +100,8 @@ python3 -m pip install -r requirements.txt
 
 在仓库根目录：
 
-1. **`./scripts/pack_adk_release.sh`** — 按 `pyproject.toml` 版本号生成 **`../adk-releases/autodrivekit-<ver>.tar.gz`** 及 **`.sha256`**（已排除 `.git`、`egg-info`、虚拟环境等）。
-2. **`PYTHONPATH=. python3 scripts/publish_release_feishu.py`** — 根据本地 tar 计算 **`sha256`**，在 **`../adk-releases/manifest-<ver>.json`** 写入正式 manifest（**`archive_file_token`** = **`DEFAULT_FEISHU_WIKI_ARCHIVE_NODE_TOKEN`**）。可选将 manifest JSON **上传**到云空间根目录并打印 **`file_token`**（用于改走 Drive manifest；默认仍以 wiki manifest 节点为准）。
+1. **`./scripts/pack_adk_release.sh`** — 按 `pyproject.toml` 版本号生成 **`release/autodrivekit-<ver>.tar.gz`** 及 **`.sha256`**（已排除 `.git`、`egg-info`、虚拟环境等）。
+2. **`PYTHONPATH=. python3 scripts/publish_release_feishu.py`** — 根据本地 tar 计算 **`sha256`**，在 **`release/manifest-<ver>.json`** 写入正式 manifest（**`archive_file_token`** = **`DEFAULT_FEISHU_WIKI_ARCHIVE_NODE_TOKEN`**）。可选将 manifest JSON **上传**到云空间根目录并打印 **`file_token`**（用于改走 Drive manifest；默认仍以 wiki manifest 节点为准）。
 3. **`PYTHONPATH=. python3 scripts/wiki_release_upload.py`** — 校验两个 wiki 文件节点并打印在飞书网页 **「上传新版本」** 时应选择的本地文件路径与链接（开放接口无法完整替代该 UI 操作，见脚本说明）。
 
 ## 飞书自建应用与环境变量（首次使用必读）
