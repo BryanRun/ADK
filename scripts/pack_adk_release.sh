@@ -10,6 +10,8 @@ NAME="autodrivekit-${VERSION}.tar.gz"
 OUT="$REL/$NAME"
 
 mkdir -p "$REL"
+# 清理旧版本产物
+rm -f "$REL"/autodrivekit-*.tar.gz "$REL"/autodrivekit-*.tar.gz.sha256 "$REL"/manifest-*.json
 echo "  版本: $VERSION"
 echo "  输出: $OUT"
 
