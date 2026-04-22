@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import fcntl
-import hashlib
 import os
 import shutil
 import tarfile
@@ -15,6 +14,7 @@ from typing import Any
 import typer
 
 from autodrivekit import __version__ as LOCAL_VERSION
+from autodrivekit.archive_hash import sha256_tar_tree
 from autodrivekit.config_migrate import manifest_file_token_from_settings
 from autodrivekit.feishu_auth import get_tenant_access_token
 from autodrivekit.feishu_drive import download_file_to_path, download_json_file
@@ -88,14 +88,6 @@ def _find_extract_root(extracted: Path) -> Path:
         "解压后未找到 pyproject.toml：请确认发布包根目录即为 AutoDriveKit 仓库根，"
         "或仅包含一层顶层目录。"
     )
-
-
-def _sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def _extract_archive(archive: Path, dest_dir: Path) -> Path:
@@ -193,8 +185,10 @@ def run_update(*, dry_run: bool, check_only: bool) -> None:
 
         download_file_to_path(token, archive_token, archive_path)
 
-        if expect_sha and _sha256_file(archive_path).lower() != expect_sha:
-            raise UpdateError("sha256 校验失败：文件可能损坏或被篡改。")
+        if expect_sha:
+            actual_sha = sha256_tar_tree(archive_path).lower()
+            if actual_sha != expect_sha:
+                raise UpdateError("sha256 校验失败：文件可能损坏或被篡改。")
 
         extract_dir = staging_root / "extracted"
         root = _extract_archive(archive_path, extract_dir)

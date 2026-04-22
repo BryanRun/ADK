@@ -23,7 +23,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import re
@@ -33,20 +32,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from autodrivekit.archive_hash import sha256_tar_tree
 from autodrivekit.config_migrate import DEFAULT_FEISHU_WIKI_ARCHIVE_NODE_TOKEN
 from autodrivekit.feishu_auth import get_tenant_access_token
 from autodrivekit.feishu_drive import (
     get_explorer_root_folder_token,
     upload_local_file_to_explorer,
 )
-
-
-def _sha256_file(p: Path) -> str:
-    h = hashlib.sha256()
-    with open(p, "rb") as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b""):
-            h.update(chunk)
-    return h.hexdigest().lower()
 
 
 def _version_from_archive(name: str) -> str:
@@ -97,7 +89,7 @@ def main() -> None:
         sys.exit(f"文件不存在: {arch}")
 
     ver = _version_from_archive(arch.name)
-    sha = _sha256_file(arch)
+    sha = sha256_tar_tree(arch)
 
     manifest = {
         "version": ver,
