@@ -424,7 +424,7 @@ flowchart TB
 
 ### 8.1 当前版本
 
-- 与 **`adk -v`** / **`adk --version`** 一致的平台版本，以安装后的 **`autodrivekit`** 包元数据为准；源码树中 **`autodrivekit/__init__.py`**（`__version__`）与 **`pyproject.toml`** 的 **`[project] version`** 应保持一致（编写本文时同步值为 **1.1.0**）。
+- 与 **`adk -v`** / **`adk --version`** 一致的平台版本，以安装后的 **`autodrivekit`** 包元数据为准；源码树中 **`autodrivekit/__init__.py`**（`__version__`）与 **`pyproject.toml`** 的 **`[project] version`** 应保持一致（编写本文时同步值为 **1.2.0**）。
 
 ### 8.2 版本历史
 
@@ -432,6 +432,7 @@ flowchart TB
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
+| **1.2.0** | 2026/4/22 | **property（minor）**：新增 `scan` 在线差异扫描（飞书与本地 Excel 逐单元格对比、颜色高亮增/删/改、版本一致性校验、流水线门控）；`snapshot` 独立为单独命令；流水线扩展为 scan → fetch → generate → deploy → snapshot 五步。**平台**：修复 `feishu_drive` 处理 gzip 压缩 manifest 的 UTF-8 解码异常。 |
 | **1.1.0** | 2026/4/16 | **平台（minor）**：`adk update`（manifest + 制品；Drive 与知识库 **file** 节点、`wiki get_node`）；`~/.local/opt/adk` staging/`current`；4A 外置与 **`adk.json`**；双 wiki 节点常量（`config_migrate`）；**`scripts/`** 发布与 **`wiki_release_upload.py`** 校验指引；**`feishu_drive`** 上传与制品下载 wiki 解析。**vhal-svc**：Android/MCU；用户数据目录预创建。详见根 **README** §用户配置与版本历史。 |
 | **1.0.0** | 2026/4/15 | 1. 优化平台交互；2. 新增 **vhal-svc** 工具包能力。 |
 | **0.3.0** | 2026/4/9 | 平台与 **property** / **cfg-word** 等工具包当前能力基线。 |
