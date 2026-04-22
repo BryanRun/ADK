@@ -322,7 +322,7 @@ python3 -m autodrivekit property -l
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
-| **1.1.0** | 2026/4/16 | **平台（minor）**：`adk update`（飞书 manifest + 制品；Drive 与知识库 **file** 节点、`wiki get_node` 解析）；`~/.local/opt/adk` staging/`current`；用户配置与数据外置（4A）；`adk.json` 默认 manifest 与 **`config_migrate`** 双 wiki 节点常量；发布脚本 **`scripts/pack_adk_release.sh`** / **`publish_release_feishu.py`** / **`wiki_release_upload.py`**；**`feishu_drive`** 上传云空间根、制品下载支持 wiki 节点。**vhal-svc**：Android/MCU 域；用户数据目录预创建。 |
+| **1.1.0** | 2026/4/16 | 1. 新增版本检测、自动更新能力；2. 优化更新策略，将用户配置文件与程序文件解耦，保证用户配置文件独立；3. 新增快速打包、发版能力； |
 | **1.0.0** | 2026/4/15 | 1. 优化平台交互；2. 新增 **vhal-svc** 工具包能力。 |
 | **0.3.0** | 2026/4/9 | 平台与 **property** / **cfg-word** 等工具包当前能力基线。 |
 | **0.2.0** | 2026/4/7 | 完成 **adk** 平台框架搭建。 |

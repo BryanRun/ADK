@@ -101,6 +101,33 @@ def _migrate_tool_config_file(path: Path) -> None:
     )
 
 
+def _seed_tool_configs_from_bundle() -> None:
+    """首次启动时：把 ``tools/<tool>/config.json`` 复制到用户配置目录，仅当目标不存在。
+
+    之前仅在工具子进程 (``ensure_tool_config_seeded``) 触发；导致用户尚未运行过某工具前，
+    在 ``~/.config/adk/<tool>/`` 下手动建的 config 不会被交互菜单读到。
+    """
+    if not TOOLS_ROOT.is_dir():
+        return
+    cfg_root = user_config_dir()
+    for d in sorted(TOOLS_ROOT.iterdir()):
+        if not d.is_dir():
+            continue
+        if not (d / MANIFEST_NAME).is_file():
+            continue
+        src_cfg = d / "config.json"
+        if not src_cfg.is_file():
+            continue
+        dest = cfg_root / d.name / "config.json"
+        if dest.is_file():
+            continue
+        try:
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src_cfg, dest)
+        except OSError:
+            pass
+
+
 def _iter_tool_config_paths() -> list[Path]:
     out: list[Path] = []
     if not TOOLS_ROOT.is_dir():
@@ -129,6 +156,8 @@ def run_startup_migrations(argv: list[str] | None = None) -> None:
             json.dumps(new_data, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
+
+    _seed_tool_configs_from_bundle()
 
     for cfg in _iter_tool_config_paths():
         _migrate_tool_config_file(cfg)
