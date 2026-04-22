@@ -5,17 +5,19 @@ property — 车辆属性（CarProperty）生成与导入
 实现目录：tools/tool_property/（对外 CLI：adk property）
 
 Usage:
-    python main.py                        # 全部项目：fetch + generate + deploy
-    python main.py BAIC                   # 仅 BAIC：fetch + generate + deploy
+    python main.py                        # 全部项目：scan + fetch + generate + deploy + snapshot
+    python main.py BAIC                   # 仅 BAIC：scan + fetch + generate + deploy + snapshot
     python main.py fetch                  # 全部项目：仅 fetch
     python main.py -f                     # 同上
     python main.py generate BAIC          # 仅 BAIC：仅 generate
     python main.py -g BAIC               # 同上
+    python main.py scan BAIC             # 仅 BAIC：仅 scan（对比飞书与本地差异）
+    python main.py snapshot BAIC         # 仅 BAIC：仅创建版本快照
     python main.py -fgd BAIC             # 仅 BAIC：fetch + generate + deploy
     python main.py list                   # 列出所有已配置项目
     python main.py -l                     # 同上
 
-操作（fetch/generate/deploy）可自由组合，不指定时默认执行全部三步。
+操作（scan/fetch/generate/deploy/snapshot）可自由组合，不指定时默认执行完整流水线。
 Excel 表格放入 input/<项目名>/ 目录，生成结果输出到 output/<项目名>/ 目录。
 """
 
@@ -30,12 +32,12 @@ import argparse
 import subprocess
 from datetime import datetime
 
-VERSION = '1.1.2'
+VERSION = '1.2.0'
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
-from lib.term_color import green, red, yellow
+from lib.term_color import green, red, yellow, bold
 from model.property_model import PropertyGenerator
 
 try:
@@ -167,7 +169,7 @@ def get_feishu_token():
 
 
 def _feishu_create_version(requests, headers, spreadsheet_token, version_name):
-    """在飞书表格上创建命名版本快照（失败仅警告不中断）。"""
+    """在飞书表格上创建命名版本快照。"""
     r = requests.post(
         f'{FEISHU_BASE}/drive/v1/files/{spreadsheet_token}/versions',
         headers=headers,
@@ -177,7 +179,7 @@ def _feishu_create_version(requests, headers, spreadsheet_token, version_name):
     if data.get('code') == 0:
         print(f"  版本快照: {version_name}")
         return True
-    print(f"  版本快照: 创建失败 ({data.get('msg', '未知错误')})，继续下载...")
+    print(f"  版本快照: 创建失败 ({data.get('msg', '未知错误')})")
     return False
 
 
@@ -333,8 +335,8 @@ def _resolve_wiki_to_spreadsheet(requests, headers, wiki_token):
     return obj_token
 
 
-def fetch_project(project_name, project_config, feishu_token):
-    """从飞书下载项目对应的电子表格到 input/ 目录（只读操作，不修改在线表格内容）。"""
+def _resolve_spreadsheet_token(project_name, project_config, requests, headers):
+    """解析项目配置中的 spreadsheet_token 并返回 (spreadsheet_token, sheet_title) 或 (None, None)。"""
     raw_token = project_config.get('spreadsheet_token', '')
     if not raw_token:
         print(f"  跳过: 未配置 spreadsheet_token")
@@ -342,20 +344,16 @@ def fetch_project(project_name, project_config, feishu_token):
         print(f'    "spreadsheet_token": "飞书表格 URL 或 token"')
         print(f'    支持格式: https://xxx.feishu.cn/sheets/<token>')
         print(f'              https://xxx.feishu.cn/wiki/<token>')
-        return False
-
-    requests = _require_requests()
-    headers = {'Authorization': f'Bearer {feishu_token}'}
+        return None, None
 
     token, url_type = _parse_feishu_url(raw_token)
     if url_type == 'wiki':
         spreadsheet_token = _resolve_wiki_to_spreadsheet(requests, headers, token)
         if spreadsheet_token is None:
-            return False
+            return None, None
     else:
         spreadsheet_token = token
 
-    # 获取飞书表格原始标题作为文件名
     r = requests.get(f'{FEISHU_BASE}/sheets/v3/spreadsheets/{spreadsheet_token}', headers=headers)
     resp = r.json()
     if resp.get('code') == 0:
@@ -364,15 +362,457 @@ def fetch_project(project_name, project_config, feishu_token):
         sheet_title = project_config.get('excel_pattern', project_name.lower())
         print(f"  警告: 无法获取表格标题，使用 excel_pattern 作为文件名")
 
+    return spreadsheet_token, sheet_title
+
+
+def snapshot_project(project_name, project_config, feishu_token):
+    """为飞书在线表格创建命名版本快照（独立命令）。"""
+    requests = _require_requests()
+    headers = {'Authorization': f'Bearer {feishu_token}'}
+
+    spreadsheet_token, sheet_title = _resolve_spreadsheet_token(
+        project_name, project_config, requests, headers)
+    if spreadsheet_token is None:
+        return False
+
+    today_str = datetime.now().strftime('%Y%m%d')
+    return _feishu_create_version(requests, headers, spreadsheet_token,
+                                  f'{sheet_title}_{today_str}')
+
+
+# ---------------------------------------------------------------------------
+#  scan：飞书在线表格与本地 Excel 逐单元格对比
+# ---------------------------------------------------------------------------
+
+def _feishu_list_versions(requests, headers, spreadsheet_token):
+    """获取飞书表格的版本快照列表，返回列表（按创建时间倒序）或空列表。"""
+    items = []
+    page_token = ''
+    while True:
+        params = {'obj_type': 'sheet', 'page_size': '50'}
+        if page_token:
+            params['page_token'] = page_token
+        r = requests.get(
+            f'{FEISHU_BASE}/drive/v1/files/{spreadsheet_token}/versions',
+            headers=headers,
+            params=params
+        )
+        data = r.json()
+        if data.get('code') != 0:
+            break
+        page_data = data.get('data', {})
+        for v in page_data.get('items', []):
+            items.append(v)
+        if not page_data.get('has_more'):
+            break
+        page_token = page_data.get('page_token', '')
+        if not page_token:
+            break
+    return items
+
+
+def _extract_date_str_from_name(name):
+    """从版本快照名称或文件名中提取 YYYYMMDD 日期字符串。
+
+    复用与 extract_date_from_filename 相同的匹配策略和有效性校验。
+    """
+    # 优先匹配 YYYY-MM-DD 或 YYYY_MM_DD
+    for m in re.finditer(r'(\d{4})[-_](\d{2})[-_](\d{2})', name):
+        y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        if 2000 <= y <= 2099 and 1 <= mo <= 12 and 1 <= d <= 31:
+            return f'{y:04d}{mo:02d}{d:02d}'
+
+    # 再匹配连续 YYYYMMDD
+    for m in re.finditer(r'(\d{4})(\d{2})(\d{2})', name):
+        y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        if 2000 <= y <= 2099 and 1 <= mo <= 12 and 1 <= d <= 31:
+            return f'{y:04d}{mo:02d}{d:02d}'
+
+    return None
+
+
+def _feishu_read_sheets_to_dict(requests, headers, spreadsheet_token):
+    """通过 Sheets API 读取飞书在线表格全部数据到内存，返回 {sheet_title: [[cell, ...], ...]}。"""
+    r = requests.get(
+        f'{FEISHU_BASE}/sheets/v2/spreadsheets/{spreadsheet_token}/metainfo',
+        headers=headers
+    )
+    data = r.json()
+    if data.get('code') != 0:
+        print(f"  ✗ 获取表格元数据失败: {data.get('msg', '未知错误')}")
+        return None
+
+    result = {}
+    sheets = data['data']['sheets']
+    for idx, sheet_info in enumerate(sheets):
+        title = sheet_info['title']
+        sheet_id = sheet_info['sheetId']
+        row_count = int(sheet_info.get('rowCount') or 0)
+        col_count = int(sheet_info.get('columnCount') or 0)
+        n_cols = min(max(col_count, 1), FEISHU_SHEETS_REBUILD_MAX_COLS)
+        n_rows = max(row_count, 1)
+        end_col = _col_letter(n_cols)
+        range_str = f'{sheet_id}!A1:{end_col}{n_rows}'
+
+        r = requests.get(
+            f'{FEISHU_BASE}/sheets/v2/spreadsheets/{spreadsheet_token}/values/{range_str}',
+            headers=headers,
+            params={'valueRenderOption': 'ToString'}
+        )
+        resp = r.json()
+        if resp.get('code') != 0:
+            print(f"  ✗ 读取 sheet '{title}' 失败: {resp.get('msg', '未知错误')}")
+            result[title] = []
+            continue
+
+        raw_values = resp.get('data', {}).get('valueRange', {}).get('values', [])
+        rows = []
+        for row in raw_values:
+            if row is None:
+                rows.append([])
+            else:
+                rows.append([_normalize_cell(v) for v in row])
+        # 裁剪尾部空行（与本地 Excel 读取保持一致）
+        while rows and all(c == '' for c in rows[-1]):
+            rows.pop()
+        result[title] = rows
+
+        if (idx + 1) % 5 == 0:
+            print(f"    {idx + 1}/{len(sheets)} sheets...")
+
+    print(f"  在线读取完成 ({len(sheets)} sheets)")
+    return result
+
+
+def _read_local_excel_to_dict(excel_path):
+    """用 openpyxl 读取本地 Excel 文件，返回与飞书读取相同格式的 {sheet_title: [[cell, ...], ...]}。"""
+    from openpyxl import load_workbook
+
+    wb = load_workbook(excel_path, data_only=True)
+    result = {}
+    for ws in wb.worksheets:
+        rows = []
+        for row in ws.iter_rows(min_row=1, max_row=ws.max_row, max_col=ws.max_column):
+            cells = [_normalize_cell(cell.value) for cell in row]
+            rows.append(cells)
+        # 裁剪尾部空行
+        while rows and all(c == '' for c in rows[-1]):
+            rows.pop()
+        result[ws.title] = rows
+    wb.close()
+    return result
+
+
+def _normalize_cell(val):
+    """归一化单元格值为字符串，便于对比。"""
+    if val is None:
+        return ''
+    s = str(val).strip()
+    try:
+        n = float(s)
+        if n == int(n):
+            return str(int(n))
+        return s
+    except (ValueError, TypeError):
+        return s
+
+
+def _diff_sheets(old_data, new_data):
+    """逐 sheet 逐单元格对比，返回结构化差异。
+
+    返回: list of dict, 每个 dict 描述一个 sheet 的差异:
+        {
+            'sheet': str,
+            'status': 'added' | 'removed' | 'changed' | 'unchanged',
+            'added_rows': [(row_idx, [cell, ...]), ...],
+            'removed_rows': [(row_idx, [cell, ...]), ...],
+            'modified_cells': [(row_idx, col_idx, old_val, new_val), ...],
+        }
+    """
+    all_sheets = list(dict.fromkeys(list(old_data.keys()) + list(new_data.keys())))
+    diffs = []
+
+    for sheet in all_sheets:
+        if sheet not in old_data:
+            new_rows = new_data[sheet]
+            diffs.append({
+                'sheet': sheet,
+                'status': 'added',
+                'added_rows': [(i, row) for i, row in enumerate(new_rows)],
+                'removed_rows': [],
+                'modified_cells': [],
+            })
+            continue
+
+        if sheet not in new_data:
+            old_rows = old_data[sheet]
+            diffs.append({
+                'sheet': sheet,
+                'status': 'removed',
+                'added_rows': [],
+                'removed_rows': [(i, row) for i, row in enumerate(old_rows)],
+                'modified_cells': [],
+            })
+            continue
+
+        old_rows = old_data[sheet]
+        new_rows = new_data[sheet]
+        max_rows = max(len(old_rows), len(new_rows))
+        max_cols = 0
+        for r in old_rows + new_rows:
+            if len(r) > max_cols:
+                max_cols = len(r)
+
+        added = []
+        removed = []
+        modified = []
+
+        for i in range(max_rows):
+            if i >= len(old_rows):
+                added.append((i, new_rows[i]))
+                continue
+            if i >= len(new_rows):
+                removed.append((i, old_rows[i]))
+                continue
+            old_r = old_rows[i]
+            new_r = new_rows[i]
+            row_max_cols = max(len(old_r), len(new_r))
+            for j in range(row_max_cols):
+                ov = old_r[j] if j < len(old_r) else ''
+                nv = new_r[j] if j < len(new_r) else ''
+                if ov != nv:
+                    modified.append((i, j, ov, nv))
+
+        status = 'unchanged'
+        if added or removed or modified:
+            status = 'changed'
+
+        diffs.append({
+            'sheet': sheet,
+            'status': status,
+            'added_rows': added,
+            'removed_rows': removed,
+            'modified_cells': modified,
+        })
+
+    return diffs
+
+
+def _print_scan_report(project_name, diffs):
+    """输出带颜色高亮的差异报告，返回是否有差异。"""
+    has_diff = False
+    total_added = 0
+    total_removed = 0
+    total_modified = 0
+    changed_sheets = 0
+
+    print(f"\n  [{project_name}] scan 结果:\n")
+
+    for d in diffs:
+        sheet = d['sheet']
+        status = d['status']
+
+        if status == 'added':
+            has_diff = True
+            changed_sheets += 1
+            n = len(d['added_rows'])
+            total_added += n
+            print(green(f"    Sheet: {sheet}  [新增 sheet — {n} 行]"))
+            for row_idx, row in d['added_rows'][:10]:
+                preview = ' | '.join(row[:6])
+                if len(row) > 6:
+                    preview += ' | ...'
+                print(green(f"      行 {row_idx + 1}: {preview}"))
+            if n > 10:
+                print(green(f"      ... 共 {n} 行"))
+            print()
+            continue
+
+        if status == 'removed':
+            has_diff = True
+            changed_sheets += 1
+            n = len(d['removed_rows'])
+            total_removed += n
+            print(red(f"    Sheet: {sheet}  [已删除 sheet — {n} 行]"))
+            for row_idx, row in d['removed_rows'][:10]:
+                preview = ' | '.join(row[:6])
+                if len(row) > 6:
+                    preview += ' | ...'
+                print(red(f"      行 {row_idx + 1}: {preview}"))
+            if n > 10:
+                print(red(f"      ... 共 {n} 行"))
+            print()
+            continue
+
+        if status == 'unchanged':
+            print(f"    Sheet: {sheet}  — 无变更")
+            continue
+
+        # changed
+        has_diff = True
+        changed_sheets += 1
+        print(f"    Sheet: {sheet}")
+
+        added_rows = d['added_rows']
+        removed_rows = d['removed_rows']
+        modified_cells = d['modified_cells']
+
+        if added_rows:
+            total_added += len(added_rows)
+            print(green(f"      新增行: {len(added_rows)} 行"))
+            for row_idx, row in added_rows[:10]:
+                preview = ' | '.join(row[:6])
+                if len(row) > 6:
+                    preview += ' | ...'
+                print(green(f"        行 {row_idx + 1}: {preview}"))
+            if len(added_rows) > 10:
+                print(green(f"        ... 共 {len(added_rows)} 行"))
+
+        if removed_rows:
+            total_removed += len(removed_rows)
+            print(red(f"      删除行: {len(removed_rows)} 行"))
+            for row_idx, row in removed_rows[:10]:
+                preview = ' | '.join(row[:6])
+                if len(row) > 6:
+                    preview += ' | ...'
+                print(red(f"        行 {row_idx + 1}: {preview}"))
+            if len(removed_rows) > 10:
+                print(red(f"        ... 共 {len(removed_rows)} 行"))
+
+        if modified_cells:
+            total_modified += len(modified_cells)
+            print(yellow(f"      修改: {len(modified_cells)} 处"))
+            for row_idx, col_idx, ov, nv in modified_cells[:20]:
+                col_letter = _col_letter(col_idx + 1)
+                print(yellow(f"        行 {row_idx + 1}, 列 {col_letter}: {ov} → {nv}"))
+            if len(modified_cells) > 20:
+                print(yellow(f"        ... 共 {len(modified_cells)} 处"))
+
+        print()
+
+    # 汇总
+    if has_diff:
+        parts = []
+        if total_added:
+            parts.append(green(f"新增 {total_added} 行"))
+        if total_removed:
+            parts.append(red(f"删除 {total_removed} 行"))
+        if total_modified:
+            parts.append(yellow(f"修改 {total_modified} 处"))
+        print(f"    汇总: {changed_sheets} 个 sheet 有变更，共 {' / '.join(parts)}")
+    else:
+        print(f"    与本地版本一致，无需更新。")
+
+    return has_diff
+
+
+def scan_project(project_name, project_config, feishu_token):
+    """扫描飞书在线表格与本地 Excel 的差异。
+
+    返回:
+        'has_diff'   — 有差异
+        'no_diff'    — 无差异
+        'error'      — 出错
+    """
+    requests = _require_requests()
+    headers = {'Authorization': f'Bearer {feishu_token}'}
+
+    spreadsheet_token, sheet_title = _resolve_spreadsheet_token(
+        project_name, project_config, requests, headers)
+    if spreadsheet_token is None:
+        return 'error'
+
+    # --- 版本一致性校验 ---
+    project_input = os.path.join(INPUT_DIR, project_name)
+    local_excel = find_latest_excel(project_input) if os.path.isdir(project_input) else None
+
+    versions = _feishu_list_versions(requests, headers, spreadsheet_token)
+    latest_snapshot_date = None
+    if versions:
+        for v in versions:
+            vname = v.get('name', '')
+            d = _extract_date_str_from_name(vname)
+            if d:
+                latest_snapshot_date = d
+                break
+
+    local_date = None
+    if local_excel:
+        dt = extract_date_from_filename(local_excel)
+        local_date = dt.strftime('%Y%m%d')
+
+    version_mismatch = False
+    if local_excel is None:
+        version_mismatch = True
+        print(bold(yellow(
+            f"  ⚠ 本地 input/{project_name}/ 下无 Excel 文件"
+        )))
+        if latest_snapshot_date:
+            print(bold(yellow(
+                f"    飞书最新版本快照日期: {latest_snapshot_date}"
+            )))
+        print(bold(yellow(
+            "    本地缺少对比基准，将以飞书当前内容作为全新增展示。"
+        )))
+        try:
+            answer = input("    是否继续 scan？(y/n): ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            answer = 'n'
+        if answer not in ('y', 'yes'):
+            return 'error'
+    elif latest_snapshot_date and local_date and latest_snapshot_date != local_date:
+        version_mismatch = True
+        print(bold(yellow(
+            f"  ⚠ 版本日期不一致！"
+        )))
+        print(bold(yellow(
+            f"    本地最新 Excel 日期: {local_date}  ({os.path.basename(local_excel)})"
+        )))
+        print(bold(yellow(
+            f"    飞书最新快照日期:    {latest_snapshot_date}"
+        )))
+        print(bold(yellow(
+            "    本地 Excel 与飞书最新快照不对应，对比结果可能不准确。"
+        )))
+        try:
+            answer = input("    是否仍以本地 Excel 为基准继续 scan？(y/n): ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            answer = 'n'
+        if answer not in ('y', 'yes'):
+            return 'error'
+
+    # --- 读取飞书在线数据 ---
+    print(f"  正在从飞书读取在线表格数据...")
+    new_data = _feishu_read_sheets_to_dict(requests, headers, spreadsheet_token)
+    if new_data is None:
+        return 'error'
+
+    # --- 读取本地基准 ---
+    if local_excel:
+        print(f"  本地基准: {os.path.basename(local_excel)}")
+        old_data = _read_local_excel_to_dict(local_excel)
+    else:
+        old_data = {}
+
+    # --- 对比 ---
+    diffs = _diff_sheets(old_data, new_data)
+    has_diff = _print_scan_report(project_name, diffs)
+
+    return 'has_diff' if has_diff else 'no_diff'
+    """从飞书下载项目对应的电子表格到 input/ 目录（只读操作，不修改在线表格内容）。"""
+    requests = _require_requests()
+    headers = {'Authorization': f'Bearer {feishu_token}'}
+
+    spreadsheet_token, sheet_title = _resolve_spreadsheet_token(
+        project_name, project_config, requests, headers)
+    if spreadsheet_token is None:
+        return False
+
     today_str = datetime.now().strftime('%Y%m%d')
     filename = f'{sheet_title}_{today_str}.xlsx'
     save_path = os.path.join(INPUT_DIR, project_name, filename)
 
-    # 1. 创建版本快照
-    _feishu_create_version(requests, headers, spreadsheet_token,
-                           f'{sheet_title}_{today_str}')
-
-    # 2. 导出并下载 xlsx（优先使用 Drive Export API，失败则降级为 Sheets API 重建）
+    # 导出并下载 xlsx（优先使用 Drive Export API，失败则降级为 Sheets API 重建）
     print(f"  导出中...")
     content = _feishu_export_xlsx(requests, headers, spreadsheet_token)
     if content is None:
@@ -658,51 +1098,105 @@ def _show_empty_config_hint():
 KNOWN_ACTIONS = {
     'fetch': 'fetch', 'generate': 'generate', 'gen': 'generate',
     'deploy': 'deploy', 'list': 'list',
+    'scan': 'scan', 'snapshot': 'snapshot',
 }
 
 
-def cmd_run(project_names, do_fetch, do_generate, do_deploy, all_projects):
-    """统一执行流水线：fetch → generate → deploy，按指定的步骤组合执行。"""
+def cmd_run(project_names, do_scan, do_fetch, do_generate, do_deploy,
+            do_snapshot, all_projects):
+    """统一执行流水线：scan → fetch → generate → deploy → snapshot。"""
     target_projects = _resolve_projects(project_names, all_projects)
     if target_projects is None:
         return
 
     steps = []
-    if do_fetch:    steps.append('fetch')
-    if do_generate: steps.append('generate')
-    if do_deploy:   steps.append('deploy')
+    if do_scan:      steps.append('scan')
+    if do_fetch:     steps.append('fetch')
+    if do_generate:  steps.append('generate')
+    if do_deploy:    steps.append('deploy')
+    if do_snapshot:  steps.append('snapshot')
     banner = ' + '.join(steps)
     print(f"=== CarPropertyManager v{VERSION}  [{banner}] ===\n")
 
+    # scan / fetch / snapshot 都需要飞书 token
+    need_feishu = do_scan or do_fetch or do_snapshot
     feishu_token = None
-    if do_fetch:
+    if need_feishu:
         feishu_token = get_feishu_token()
         if feishu_token is None:
             return
 
+    # 是否有 scan 之后的后续步骤（决定 scan 是否暂停等待用户确认）
+    has_post_scan_steps = do_fetch or do_generate or do_deploy or do_snapshot
+
+    scan_count = 0
     fetch_count = 0
     gen_count = 0
     deploy_count = 0
+    snapshot_count = 0
 
     for project_name in target_projects:
         project_config = all_projects[project_name]
         desc = project_config.get('description', '')
         print(f"[{project_name}] {desc}")
 
+        # --- scan ---
+        scan_ok = True
+        scan_continue = True  # 用户是否同意继续后续步骤
+        if do_scan:
+            print()
+            print("  --- 扫描 ---")
+            result = scan_project(project_name, project_config, feishu_token)
+            if result == 'error':
+                scan_ok = False
+                print(red("  ✘ [scan] 失败"))
+            elif result == 'no_diff':
+                scan_count += 1
+                print(green("  ✓ [scan] 无差异"))
+                if has_post_scan_steps:
+                    print("  与本地版本一致，跳过后续步骤。")
+                    scan_continue = False
+            else:  # has_diff
+                scan_count += 1
+                print(green("  ✓ [scan] 完成"))
+                if has_post_scan_steps:
+                    try:
+                        answer = input("\n  是否继续执行后续步骤？(y/n): ").strip().lower()
+                    except (EOFError, KeyboardInterrupt):
+                        answer = 'n'
+                    if answer not in ('y', 'yes'):
+                        scan_continue = False
+                        print(yellow("  用户取消，跳过后续步骤。"))
+
+        # --- fetch ---
         fetch_ok = True
         if do_fetch:
-            print()
-            print("  --- 下载 ---")
-            if fetch_project(project_name, project_config, feishu_token):
-                fetch_count += 1
-                print(green("  ✓ [fetch] 成功"))
+            if (not do_scan or scan_ok) and scan_continue:
+                print()
+                print("  --- 下载 ---")
+                if fetch_project(project_name, project_config, feishu_token):
+                    fetch_count += 1
+                    print(green("  ✓ [fetch] 成功"))
+                else:
+                    fetch_ok = False
+                    print(red("  ✘ [fetch] 失败"))
             else:
                 fetch_ok = False
-                print(red("  ✘ [fetch] 失败"))
+                if not scan_continue:
+                    pass  # 用户主动跳过，不再重复提示
+                else:
+                    print()
+                    print(yellow("  ⚠ [fetch] 已跳过（scan 未成功）"))
 
+        # --- generate ---
         gen_ok = True
         if do_generate:
-            if not do_fetch or fetch_ok:
+            can_run = scan_continue
+            if do_scan and not scan_ok:
+                can_run = False
+            if do_fetch and not fetch_ok:
+                can_run = False
+            if can_run:
                 print()
                 print("  --- 生成 ---")
                 if process_project(project_name, project_config):
@@ -713,27 +1207,67 @@ def cmd_run(project_names, do_fetch, do_generate, do_deploy, all_projects):
                     print(red("  ✘ [generate] 失败"))
             else:
                 gen_ok = False
-                print()
-                print(yellow("  ⚠ [generate] 已跳过（fetch 未成功）"))
+                if scan_continue:
+                    print()
+                    print(yellow("  ⚠ [generate] 已跳过（上游步骤未成功）"))
 
+        # --- deploy ---
+        deploy_ok = True
         if do_deploy:
-            if (not do_generate or gen_ok) and (not do_fetch or fetch_ok):
+            can_run = scan_continue
+            if do_scan and not scan_ok:
+                can_run = False
+            if do_fetch and not fetch_ok:
+                can_run = False
+            if do_generate and not gen_ok:
+                can_run = False
+            if can_run:
                 print()
                 print("  --- 部署 ---")
                 if deploy_project(project_name, project_config):
                     deploy_count += 1
                     print(green("  ✓ [deploy] 成功"))
                 else:
+                    deploy_ok = False
                     print(red("  ✘ [deploy] 失败"))
             else:
+                deploy_ok = False
+                if scan_continue:
+                    print()
+                    print(yellow("  ⚠ [deploy] 已跳过（上游步骤未成功）"))
+
+        # --- snapshot（置于最后，前面全部成功才执行）---
+        if do_snapshot:
+            can_run = scan_continue
+            if do_scan and not scan_ok:
+                can_run = False
+            if do_fetch and not fetch_ok:
+                can_run = False
+            if do_generate and not gen_ok:
+                can_run = False
+            if do_deploy and not deploy_ok:
+                can_run = False
+            if can_run:
                 print()
-                print(yellow("  ⚠ [deploy] 已跳过（上游步骤未成功）"))
+                print("  --- 版本快照 ---")
+                if snapshot_project(project_name, project_config, feishu_token):
+                    snapshot_count += 1
+                    print(green("  ✓ [snapshot] 成功"))
+                else:
+                    print(red("  ✘ [snapshot] 失败"))
+            else:
+                if scan_continue:
+                    print()
+                    print(yellow("  ⚠ [snapshot] 已跳过（上游步骤未成功）"))
 
         print()
 
     # 汇总
     total = len(target_projects)
     parts = []
+    if do_scan:
+        seg = f"扫描: {scan_count}/{total}"
+        parts.append(green(seg) if scan_count == total else red(seg))
     if do_fetch:
         seg = f"下载: {fetch_count}/{total}"
         parts.append(green(seg) if fetch_count == total else red(seg))
@@ -743,6 +1277,9 @@ def cmd_run(project_names, do_fetch, do_generate, do_deploy, all_projects):
     if do_deploy:
         seg = f"部署: {deploy_count}/{total}"
         parts.append(green(seg) if deploy_count == total else red(seg))
+    if do_snapshot:
+        seg = f"快照: {snapshot_count}/{total}"
+        parts.append(green(seg) if snapshot_count == total else red(seg))
     print("  ".join(parts))
 
 
@@ -750,21 +1287,23 @@ def main():
     parser = argparse.ArgumentParser(
         description=f'property — 车辆属性（CarProperty）生成与导入 v{VERSION}',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog='''操作（可组合，不指定则默认 fetch + generate + deploy）:
-  fetch     / -f    从飞书下载表格到 input/
-  generate  / -g    从 input/ 读取 Excel 生成代码到 output/
-  deploy    / -d    将 output/ 部署到目标 Git 仓库
-  list      / -l    列出所有已配置项目及状态
+        epilog='''操作（可组合，不指定则默认执行完整流水线 scan + fetch + generate + deploy + snapshot）:
+  scan               对比飞书在线表格与本地 Excel 差异
+  fetch     / -f     从飞书下载表格到 input/
+  generate  / -g     从 input/ 读取 Excel 生成代码到 output/
+  deploy    / -d     将 output/ 部署到目标 Git 仓库
+  snapshot  / -s     为飞书在线表格创建版本快照
+  list      / -l     列出所有已配置项目及状态
 
 示例:
-  python main.py                        全部项目：fetch + generate + deploy
-  python main.py BAIC                   仅 BAIC：fetch + generate + deploy
+  python main.py                        全部项目：完整流水线
+  python main.py BAIC                   仅 BAIC：完整流水线
+  python main.py scan BAIC              仅 BAIC：仅扫描差异
   python main.py fetch                  全部项目：仅 fetch
   python main.py -f                     同上
   python main.py generate BAIC          仅 BAIC：仅 generate
-  python main.py -g BAIC                同上
-  python main.py fetch generate BAIC    仅 BAIC：fetch + generate
-  python main.py -fg BAIC               同上
+  python main.py -fg BAIC               仅 BAIC：fetch + generate
+  python main.py snapshot BAIC          仅 BAIC：仅创建版本快照
   python main.py list                   列出项目
   python main.py -l                     同上''')
 
@@ -774,13 +1313,17 @@ def main():
                         help='从 input/ 读取 Excel 生成代码到 output/')
     parser.add_argument('-d', '--deploy', action='store_true',
                         help='将 output/ 部署到目标 Git 仓库')
+    parser.add_argument('-s', '--snapshot', action='store_true',
+                        help='为飞书在线表格创建版本快照')
     parser.add_argument('-l', '--list', action='store_true',
                         help='列出所有已配置项目及状态')
     parser.add_argument('-v', '--version', action='version',
                         version=f'property v{VERSION}')
+    parser.add_argument('--scan', action='store_true',
+                        help='对比飞书在线表格与本地 Excel 差异')
     parser.add_argument('--run', action='store_true', help=argparse.SUPPRESS)
     parser.add_argument('args', nargs='*', metavar='ACTION_OR_PROJECT',
-                        help='操作名（fetch/generate/deploy/list）或项目名')
+                        help='操作名（scan/fetch/generate/deploy/snapshot/list）或项目名')
 
     args = parser.parse_args()
 
@@ -800,10 +1343,12 @@ def main():
     if args.fetch:    actions.add('fetch')
     if args.generate: actions.add('generate')
     if args.deploy:   actions.add('deploy')
+    if args.snapshot:  actions.add('snapshot')
     if args.list:     actions.add('list')
+    if args.scan:     actions.add('scan')
 
     if not actions:
-        actions = {'fetch', 'generate', 'deploy'}
+        actions = {'scan', 'fetch', 'generate', 'deploy', 'snapshot'}
 
     original_cwd = os.getcwd()
     if _PATHS:
@@ -825,10 +1370,13 @@ def main():
     if 'list' in actions:
         list_projects(config)
     else:
+        do_scan     = 'scan' in actions
         do_fetch    = 'fetch' in actions
         do_generate = 'generate' in actions
         do_deploy   = 'deploy' in actions
-        cmd_run(project_names, do_fetch, do_generate, do_deploy, all_projects)
+        do_snapshot = 'snapshot' in actions
+        cmd_run(project_names, do_scan, do_fetch, do_generate, do_deploy,
+                do_snapshot, all_projects)
 
     os.chdir(original_cwd)
 
