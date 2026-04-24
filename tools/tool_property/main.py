@@ -799,6 +799,9 @@ def scan_project(project_name, project_config, feishu_token):
     has_diff = _print_scan_report(project_name, diffs)
 
     return 'has_diff' if has_diff else 'no_diff'
+
+
+def fetch_project(project_name, project_config, feishu_token):
     """从飞书下载项目对应的电子表格到 input/ 目录（只读操作，不修改在线表格内容）。"""
     requests = _require_requests()
     headers = {'Authorization': f'Bearer {feishu_token}'}
