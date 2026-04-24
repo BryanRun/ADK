@@ -430,7 +430,7 @@ def _print_interactive_panel(*, console: object, markup_mode: MarkupModeStrict) 
     )
     rest = Text.from_markup(
         "进入 Rich 向导后依次选择工具包、项目（若 [dim]adk-tool.json[/] 配置了 "
-        "[dim]interactive_project_pick[/]）及参数。非交互用法见下方「通用选项」「工具包」「专业选项」。"
+        "[dim]interactive_project_pick[/]）及参数。非交互用法见上方「通用选项」「工具包」及下方「专业选项」。"
     )
     console.print(
         Panel(

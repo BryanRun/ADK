@@ -44,6 +44,12 @@ def _param_wants_exit(raw: str) -> bool:
 class ADKRootGroup(TyperGroup):
     """根帮助：页眉 + 通用选项（含 update）/ 工具包 / 交互 / 专业选项（Rich）。"""
 
+    def get_help_option(self, ctx: click.Context) -> click.Option | None:
+        opt = super().get_help_option(ctx)
+        if opt is not None:
+            opt.help = "显示帮助信息并退出。"
+        return opt
+
     def format_help(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
         if not HAS_RICH or self.rich_markup_mode is None:
             return super().format_help(ctx, formatter)

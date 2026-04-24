@@ -293,14 +293,15 @@ adk [通用选项] <子命令> [ARGS]...
 | 命令 | 作用 |
 |------|------|
 | `adk` | 无参数：进入 **Rich 交互菜单**（工具列表来自各 `adk-tool.json`） |
-| `adk -h` / `adk --help` | 平台帮助：页眉 + 通用选项（含 **`update`**）+ 工具包 + 交互说明 + 示例区 |
+| `adk -h` / `adk --help` | 平台帮助：页眉 + 通用选项（含 **`update`**、**`doctor`**）+ 工具包 + 交互说明 + 示例区 |
 | `adk -v` / `adk --version` | 平台版本 |
 | `adk update` / `adk update -h` | 在线更新（飞书 manifest JSON + 制品包；Drive / 知识库文件节点；详见根 **README**） |
+| `adk doctor` | 体检平台配置、工具配置一致性、环境变量与依赖，并给出修复建议 |
 
 ### 5.3 `adk -h` 页面结构（用户可见分区）
 
 1. **页眉**：简介、版本、作者、Copyright（文案可在 **`autodrivekit/platform_info.py`** 中按项目调整）。  
-2. **通用选项**：`-h` / `--help`、`-v` / `--version`，以及同区展示的 **`update`**（由 Typer **`rich_help_panel`** 归入「通用选项」Rich 分区）。  
+2. **通用选项**：`-h` / `--help`、`-v` / `--version`，以及同区展示的 **`update`**（飞书 manifest + 制品在线更新）与 **`doctor`**（平台体检与修复建议）（均由 Typer **`rich_help_panel`** 归入「通用选项」Rich 分区）。  
 3. **工具包**：已注册的 **`id`** 与 **`title`**。  
 4. **交互说明**：仅输入 **`adk`** 进入菜单的提示。  
 5. **专业选项 / 示例**：**`adk <id> <项目>`** 占位示例，下方表格列出本机 **`config.json` → `projects`** 中的可选项目名（**不含** `adk update`；更新见第 2 点）。
@@ -360,7 +361,7 @@ adk property fetch BAIC
 
 ### 6.2 各工具一句话（平台视角）
 
-- **property**：飞书/Excel → 头文件 → 可选部署到 Git；支持 `list` / `fetch` / `generate` / `deploy` 等组合。  
+- **property**：飞书/Excel → 头文件 → 可选部署到 Git；支持 `scan` / `fetch` / `generate` / `deploy` / `snapshot` / `list` 等组合。  
 - **cfg-word**：解析与飞书中间表、校验、`property-sync`、生成 `cfg_cal.h` 等与部署；默认流水线较长，交互中有高亮说明。  
 - **vhal-svc**：**fetch → generate → deploy → compile** 任一步失败则后续跳过且非零退出；`deploy.files` 驱动拷贝；`compile` 可占位。
 
@@ -530,6 +531,7 @@ flowchart LR
 | `adk -h` | 平台帮助 |
 | `adk -v` | 平台版本 |
 | `adk update --check-only` | 仅比对远端 manifest 版本，不下载安装 |
+| `adk doctor` | 体检平台配置、工具配置一致性、环境变量与依赖 |
 | `adk <id> --help` | 与 `python3 main.py --help` 等价（在已安装环境下） |
 
 ### B. 平台依赖一览（摘自 `pyproject.toml`）
@@ -563,5 +565,5 @@ Typer、Rich、openpyxl、Jinja2、requests 等；精确版本范围以仓库内
 
 ---
 
-**文档版本**：与平台版本同步维护（当前正文对齐 **1.1.0**）。  
+**文档版本**：与平台版本同步维护（当前正文对齐 **1.2.2**）。  
 **本地路径**：`1_ToolChain/0_AutoDriveKit/docs/ADK平台说明.md`
