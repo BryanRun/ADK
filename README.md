@@ -1,8 +1,62 @@
 # AutoDriveKit
 
-**AutoDriveKit**（简称 **ADK**）是**统一工具平台**：为车辆相关代码生成与配置同步提供**单一 CLI 入口** `adk`。平台侧重**可扩展的工具生态**：每个工具以**独立工具包**形式放在固定目录下，通过清单注册后即可被 `adk` 识别，实现「即插即用」。
+![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-green) ![Version](https://img.shields.io/badge/Version-1.2.3-orange)
 
-**各工具的安装方式、命令参数、配置项与流水线细节**不在本文重复展开，请直接打开下表中的 **工具包 README**。
+**AutoDriveKit**（简称 **ADK**）是**统一工具平台**：为车辆相关代码生成与配置同步提供**单一 CLI 入口** `adk`。每个工具以**独立工具包**形式放在固定目录下，通过清单注册后即可被 `adk` 识别，实现「即插即用」。
+
+---
+
+## 目录
+
+- [核心能力](#核心能力)
+- [快速开始](#快速开始)
+- [命名与定位](#命名与定位)
+- [目录结构（节选）](#目录结构节选)
+- [使用指南](#使用指南)
+- [工具包 README 索引](#工具包-readme-索引)
+- [飞书配置（首次使用必读）](#飞书配置首次使用必读)
+- [用户配置 / 数据目录与在线更新](#用户配置--数据目录与在线更新)
+- [工具生态：如何新增或扩展工具](#工具生态如何新增或扩展工具)
+- [版本](#版本)
+- [常见问题](#常见问题)
+- [反馈](#反馈)
+
+---
+
+## 核心能力
+
+| 能力 | 说明 |
+|------|------|
+| 工具发现 | 启动时扫描 `tools/*/adk-tool.json`，校验 `id` 唯一且入口文件存在 |
+| 参数透传 | `adk <id>` 之后的参数原样交给工具包入口（默认 `main.py`） |
+| 帮助与菜单 | `adk -h` 分区展示；仅 `adk` 时进入交互式工具选择与参数向导 |
+| 版本查询 | `adk -v` / `adk --version` 与平台包版本一致 |
+| 在线更新 | `adk update` 从飞书拉取 manifest + 制品包，自动部署到本地 |
+| 体检诊断 | `adk doctor` 检测配置、环境变量、依赖一致性并给出修复建议 |
+
+---
+
+## 快速开始
+
+**环境要求**：Python **3.10+**（建议使用 `python3 -m pip`）
+
+```bash
+# 1. 安装
+python3 -m pip install -e .
+
+# 2. 验证
+adk -v
+
+# 3. 运行（交互式菜单 或 一条龙命令）
+adk                        # 交互式菜单
+adk property BAIC          # 一条龙：对项目 BAIC 跑默认流水线
+```
+
+> 也可使用 `python3 -m pip install -r requirements.txt` 安装。依赖由平台 `pyproject.toml` 统一声明（含 Typer 与各工具常用库）。  
+> 若 shell 提示 `adk` 未找到，请先在仓库根执行 `pip install -e .`。  
+> 若缺少 Typer，平台会打印原因并询问是否自动安装；选 `yes` 后将尝试安装并用当前参数重新启动。
+
+---
 
 ## 命名与定位
 
@@ -13,6 +67,8 @@
 | **`vhal-svc`**（暂定） | **VHAL**：**fetch → generate → deploy → compile** 为**强依赖链**（任一步失败则后续跳过）；飞书 fetch、VehicleGenerateTool 生成、按 **deploy.files** 部署 | `tool_vhal_svc/` | [**README.md**](tools/tool_vhal_svc/README.md) |
 
 说明：CLI 名（`property`、`cfg-word` 等）与工具包目录 **`tool_*`** 一一对应；**`vhal-svc`** 为暂定名，后续可统一重命名。
+
+---
 
 ## 目录结构（节选）
 
@@ -42,69 +98,136 @@
         └── ...
 ```
 
-## 环境要求
+---
 
-- Python **3.10+**
-- 建议使用 `python3 -m pip`（避免系统 `pip` 指向 Python 2）
+## 使用指南
 
-## 安装
+### 逻辑架构
 
-在**本仓库根目录**（含 `pyproject.toml`）执行：
-
-```bash
-python3 -m pip install -U pip setuptools wheel
-python3 -m pip install -e .
+```mermaid
+flowchart TB
+  U[用户终端]
+  ADK["adk CLI 平台层"]
+  REG["扫描与注册 adk-tool.json"]
+  UPD["update / doctor（内置）"]
+  T1[property 工具包]
+  T2[cfg-word 工具包]
+  T3[vhal-svc 工具包]
+  FEISHU[飞书开放平台]
+  U --> ADK
+  ADK --> REG
+  ADK --> UPD
+  REG --> T1
+  REG --> T2
+  REG --> T3
+  T1 -. fetch/scan .-> FEISHU
+  T2 -. sync .-> FEISHU
+  T3 -. fetch .-> FEISHU
+  UPD -. manifest .-> FEISHU
 ```
 
-依赖由平台 `pyproject.toml` 统一声明（含 Typer 与各工具常用库）。也可：
+### 命令执行流程
 
-```bash
-python3 -m pip install -r requirements.txt
+```mermaid
+sequenceDiagram
+  participant User as 用户
+  participant ADK as adk CLI
+  participant Tool as 工具包 main.py
+  User->>ADK: adk property BAIC
+  ADK->>ADK: 解析 id=property
+  ADK->>Tool: 透传 argv: BAIC
+  Tool->>User: 输出 / 退出码
 ```
 
-未执行安装时，若直接运行 `python3 -m autodrivekit` 或已安装的 `adk`，平台会检测 **Typer** 是否可用；若缺失，会**打印原因与推荐命令**，并询问是否对当前仓库根目录执行 **`pip install -e .`**；选 `yes` 后将尝试自动安装并在成功后**用当前参数重新启动**同一命令。
+### 统一入口
 
-> **说明**：若在 shell 中输入 `adk` 提示「命令未找到」，说明尚未安装入口脚本或未加入 `PATH`，请先按上文完成 `pip install -e .`；该情况由操作系统处理，应用层无法在运行前拦截。
+```bash
+adk                  # 无参数：交互式菜单（工具包列表来自 tools/*/adk-tool.json）
+adk -v               # 平台版本（小写 -v，与 -h 同为短选项）
+adk --version        # 同上（长选项）
+adk -h               # 平台帮助：页眉 + 下列分区（无单独 Usage 行与长段 epilog）
+```
 
-## 用户配置 / 数据目录（4A）与在线更新
+**`adk -h` 结构（Rich）**：
 
-通过 **`adk` 入口**调用子工具时，平台会注入环境变量 **`AUTODRIVEKIT_USER_CONFIG_DIR`**（默认 `~/.config/adk`）与 **`AUTODRIVEKIT_USER_DATA_DIR`**（默认 `~/.local/share/adk`）：各工具的 `config.json` 落在前者下以工具目录名命名的子目录，**`input/`、`output/`** 等可变数据落在后者下同名子目录；若用户侧文件不存在，会**从包内默认文件复制一份**（直接运行各工具目录内 `python main.py` 且未设置上述变量时，行为与旧版一致，仍在工具包目录内读写）。
+1. **页眉（醒目块）**：**简介**（突出 **ADK** 与统一工具平台）、**版本**、**作者**、**Copyright**（英文版权行；文案默认在 **`autodrivekit/platform_info.py`**，可按项目修改）。
+2. **通用选项**：`-h` / `--help`、`-v` / `--version`，以及与二者同区的 **`update`**（飞书 manifest + 制品在线更新；见 **`adk update -h`**）与 **`doctor`**（平台体检与修复建议）。
+3. **工具包**：`adk-tool.json` 注册的 **id 与简介**（即 `adk <id>` 中的 `<id>`），**不是**示例命令行。帮助里工具包 **id** 使用 **品红色（bold magenta）** 显示，与下方「专业选项」中的示例命令（默认 **青色**）区分。
+4. **交互选项**：单独醒目一行说明 **仅输入 `adk`（不要跟子命令或其它参数）** 即进入 **Rich 交互菜单**；附简短向导说明。
+5. **专业选项（一条龙）**：**`adk <工具包> <项目>`** 形式示例（**`<项目>`** 为占位符）；其下表格列出**当前本机**从各工具 **`config.json`** 的 **`projects`** 解析到的**可选项目名**（与交互菜单一致，优先用户配置目录）。
 
-**`adk update`**：使用飞书 **Drive** 下载发布物（需自建应用 **`FEISHU_APP_ID` / `FEISHU_APP_SECRET`**）。可选参数：**`-n` / `--dry-run`**、**`-c` / `--check-only`**；完整说明见 **`adk update -h`**。
+本帮助**不**单独打印 Typer 的 `Usage:` 长行，也**无**文末大段 epilog；命令行形式见下节 **ARGS**。可选：设置 **`NO_COLOR=1`**（或 `TERM=dumb`）以减弱终端彩色输出。
 
-**manifest 与制品（两个知识库「文件」节点）**：
+实现要点：**`autodrivekit/adk_rich_help.py`**（分区与样式）、**`platform_info.py`**（页眉字段）。
 
-| 用途 | 常量 | 知识库链接 |
-|------|------|------------|
-| 默认 manifest（JSON） | **`DEFAULT_MANIFEST_FILE_TOKEN`**（= **`DEFAULT_FEISHU_WIKI_MANIFEST_NODE_TOKEN`**） | [manifest 文件节点](https://t83dfrspj4.feishu.cn/wiki/FSSpwYBwIioeN3ksc72cvCU4ncg) |
-| 安装包（`manifest` 内 **`archive_file_token`**） | **`DEFAULT_FEISHU_WIKI_ARCHIVE_NODE_TOKEN`** | [安装包节点](https://t83dfrspj4.feishu.cn/wiki/MaGVwCGz9iUQ6ekJb5MckijYnAb) |
+### 交互式菜单
 
-下载时先走 Drive；**HTTP 404** 时再 **`wiki/v2/spaces/get_node`**，仅当节点 **`obj_type` 为 `file`** 时用 **`obj_token`** 继续走 Drive。覆盖默认 manifest 来源：在 **`~/.config/adk/adk.json`** 的 **`feishu_update.manifest_file_token`** 填写，或设置 **`ADK_FEISHU_MANIFEST_FILE_TOKEN`**（一般与上表 manifest 节点 token 一致，即 **`FSSpwYBwIioeN3ksc72cvCU4ncg`**）。
+界面用 **Rich** 的 **Panel / Rule** 分区。**步骤 1** 选择工具包；若该工具在 `adk-tool.json` 中配置了 **`interactive_project_pick`**（如 **property**、**cfg-word**、**vhal-svc**），则 **步骤 2 选择项目**，**步骤 3** 为说明与参数（**`choices`** / **`examples`**）；未配置时 **步骤 2** 即为说明与参数。
 
-**manifest JSON 字段**：
+**退出**：步骤 1 与项目选择步骤可输入 **`0` / `q` / `quit` / `exit` / 直接回车**；参数行输入 **`q` / `quit` / `exit`**（参数行**回车**仍表示「默认执行」，与退出区分）。
 
-- **`version`**：语义化版本号（高于当前 `autodrivekit.__version__` 时才安装）  
-- **`archive_file_token`**：制品；可为 **Drive `file_token`** 或 **知识库「文件」节点 token**（默认与上表安装包节点 **`MaGVwCGz9iUQ6ekJb5MckijYnAb`** 一致）。**`download_file_to_path`** 与 manifest 下载逻辑一致，支持 wiki 节点解析后再下载。  
-- **`filename`**：本地保存名（如 `autodrivekit-1.1.0.tar.gz`）  
-- **`sha256`**（可选但强烈建议）：小写十六进制；与制品字节一致  
+### ARGS 是什么
 
-**约束**：同一 wiki 节点 token **不能**同时作为「manifest JSON」与「安装包」两种不同内容的来源；当前默认已拆成**两个节点**。
+命令行一般形式为 **`adk [通用选项] <子命令> [ARGS]...`**。其中 **`<子命令>`** 多为 **`adk-tool.json` 注册的 `id`**（即工具包名）；**`update`** 为平台内置子命令（非工具包）。**`[ARGS]`** 写在子命令之后时，对工具包按顺序**原样透传**给该工具入口（默认 `main.py`），与在该工具目录执行 `python3 main.py …` 等价；对 **`update`** 则为其 Typer 选项（见 **`adk update -h`**）。具体参数由各子命令自行定义。
 
-**说明**：manifest 节点在飞书中须为 **「文件」**（`obj_type=file`）且内容为合法 JSON，`adk update` 才能通过 API 拉取。若误用 **飞书文档（docx）** 页作为节点，请改为 **文件** 节点或 Drive `file_token`。
+### 一条龙（直接跑某工具包流水线）
 
-自建应用需 **Drive 下载**、**wiki 节点可读** 等权限，并将应用添加为知识库/文件协作者。  
+不写交互菜单时，可用 **`adk <工具包> <参数…>`** 直接执行，例如（默认跑该工具文档中的**完整流水线**，具体步骤因工具而异）：
 
-安装目录为 **`~/.local/opt/adk/releases/<版本>/`**，并通过符号链接 **`~/.local/opt/adk/current`** 做**原子切换**。更新完成后，**配置迁移在下次执行任意非 `update` 的 `adk` 命令时执行**（B 方案）。未走 `pip install` 时，可在发布树根目录使用仓库内 **`adk_launch.py`** 启动 CLI，并将该路径加入 `PATH`。
+```bash
+adk cfg-word n50           # cfg-word：对项目 n50 跑默认全流程
+adk property BAIC          # property：对项目 BAIC 跑 scan+fetch+generate+deploy+snapshot（默认）
+```
 
-### 发布脚本（维护者）
+单步或自定义组合仍写在 **`ARGS`** 中，与各工具 `main.py` 一致：
 
-在仓库根目录：
+```bash
+adk property --help          # 与各工具 python3 main.py --help 相同
+adk property -l
+adk cfg-word --help
+adk cfg-word sync n50
+```
 
-1. **`./scripts/pack_adk_release.sh`** — 按 `pyproject.toml` 版本号生成 **`release/autodrivekit-<ver>.tar.gz`** 及 **`.sha256`**（已排除 `.git`、`egg-info`、虚拟环境等）。
-2. **`PYTHONPATH=. python3 scripts/publish_release_feishu.py`** — 根据本地 tar 计算 **`sha256`**，在 **`release/manifest-<ver>.json`** 写入正式 manifest（**`archive_file_token`** = **`DEFAULT_FEISHU_WIKI_ARCHIVE_NODE_TOKEN`**）。可选将 manifest JSON **上传**到云空间根目录并打印 **`file_token`**（用于改走 Drive manifest；默认仍以 wiki manifest 节点为准）。
-3. **`PYTHONPATH=. python3 scripts/wiki_release_upload.py`** — 校验两个 wiki 文件节点并打印在飞书网页 **「上传新版本」** 时应选择的本地文件路径与链接（开放接口无法完整替代该 UI 操作，见脚本说明）。
+平台对工具包入口**不拦截** `--help` / `-h`，会透传给工具，因此可直接使用 **`adk <工具包> --help`**。若将来遇到与 Typer 冲突的极少数选项，仍可使用 **`adk <工具包> -- <参数…>`** 强制透传。
 
-## 飞书自建应用与环境变量（首次使用必读）
+> **说明**：**cfg-word** 工具自身另有 **`-V`**（大写）表示 **validate**，与平台 **`adk -v`**（版本）不同；请写在 **`adk cfg-word …`** 之后，例如 `adk cfg-word -V n50`。
+
+### 未安装 `adk` 脚本时
+
+```bash
+python3 -m autodrivekit
+python3 -m autodrivekit property -l
+```
+
+### 命令速查
+
+| 命令 | 说明 |
+|------|------|
+| `adk` | 交互菜单 |
+| `adk -h` | 平台帮助 |
+| `adk -v` | 平台版本 |
+| `adk update` | 检测远端 manifest 版本并自动下载安装部署 |
+| `adk update --check-only` | 仅比对远端 manifest 版本，不下载安装 |
+| `adk doctor` | 体检平台配置、工具配置一致性、环境变量与依赖 |
+| `adk <id> --help` | 与 `python3 main.py --help` 等价 |
+
+---
+
+## 工具包 README 索引
+
+平台本文仅说明 **安装、`adk` 用法与生态约定**；**每个工具包的完整说明**以对应目录下的 **`README.md`** 为准（参数、示例、`config.json`、流水线步骤等）。
+
+| 工具包 | 路径 | 说明 |
+|--------|------|------|
+| **property** | [**tools/tool_property/README.md**](tools/tool_property/README.md) | CarProperty：fetch / generate / deploy、`config.json`、多变体、部署与安全校验等 |
+| **cfg-word** | [**tools/tool_cfg_word/README.md**](tools/tool_cfg_word/README.md) | 配置字：parse → sync → validate → property-sync → generate → deploy、飞书与 `vehicle_config_byte_count` 等 |
+| **vhal-svc** | [**tools/tool_vhal_svc/README.md**](tools/tool_vhal_svc/README.md) | 飞书拉表、生成、deploy.files 拷贝至 hal/vehicleservice |
+
+在仓库内跳转：上述链接均为相对路径（以本文件所在目录为根）。若使用 Git 托管前端浏览，也可从本页顶部的「命名与定位」表直接点入各工具 **README** 列。
+
+---
+
+## 飞书配置（首次使用必读）
 
 下列工具会通过**飞书开放平台**调用在线表格、导出或写入能力，**同一套自建应用凭证**即可共用（在 shell 中配置一次即可被 **`property` / `cfg-word` / `vhal-svc`** 等读取）：
 
@@ -184,75 +307,47 @@ $env:FEISHU_APP_SECRET="你的AppSecret"
 - **权限位列表、Wiki URL 写法、`config.json` 字段**等仍以各工具 README 为准：  
   [tool_property/README.md](tools/tool_property/README.md) · [tool_cfg_word/README.md](tools/tool_cfg_word/README.md) · [tool_vhal_svc/README.md](tools/tool_vhal_svc/README.md)。
 
-## 使用
+---
 
-### 统一入口
+## 用户配置 / 数据目录与在线更新
 
-```bash
-adk                  # 无参数：交互式菜单（工具包列表来自 tools/*/adk-tool.json）
-adk -v               # 平台版本（小写 -v，与 -h 同为短选项）
-adk --version        # 同上（长选项）
-adk -h               # 平台帮助：页眉 + 下列分区（无单独 Usage 行与长段 epilog）
-```
+通过 **`adk` 入口**调用子工具时，平台会注入环境变量 **`AUTODRIVEKIT_USER_CONFIG_DIR`**（默认 `~/.config/adk`）与 **`AUTODRIVEKIT_USER_DATA_DIR`**（默认 `~/.local/share/adk`）：各工具的 `config.json` 落在前者下以工具目录名命名的子目录，**`input/`、`output/`** 等可变数据落在后者下同名子目录；若用户侧文件不存在，会**从包内默认文件复制一份**（直接运行各工具目录内 `python main.py` 且未设置上述变量时，行为与旧版一致，仍在工具包目录内读写）。
 
-**`adk -h` 结构（Rich）**：
+**`adk update`**：使用飞书 **Drive** 下载发布物（需自建应用 **`FEISHU_APP_ID` / `FEISHU_APP_SECRET`**）。可选参数：**`-n` / `--dry-run`**、**`-c` / `--check-only`**；完整说明见 **`adk update -h`**。
 
-1. **页眉（醒目块）**：**简介**（突出 **ADK** 与统一工具平台）、**版本**、**作者**、**Copyright**（英文版权行；文案默认在 **`autodrivekit/platform_info.py`**，可按项目修改）。
-2. **通用选项**：`-h` / `--help`、`-v` / `--version`，以及与二者同区的 **`update`**（飞书 manifest + 制品在线更新；见 **`adk update -h`**）与 **`doctor`**（平台体检与修复建议）。
-3. **工具包**：`adk-tool.json` 注册的 **id 与简介**（即 `adk <id>` 中的 `<id>`），**不是**示例命令行。帮助里工具包 **id** 使用 **品红色（bold magenta）** 显示，与下方「专业选项」中的示例命令（默认 **青色**）区分。
-4. **交互选项**：单独醒目一行说明 **仅输入 `adk`（不要跟子命令或其它参数）** 即进入 **Rich 交互菜单**；附简短向导说明。
-5. **专业选项（一条龙）**：**`adk <工具包> <项目>`** 形式示例（**`<项目>`** 为占位符）；其下表格列出**当前本机**从各工具 **`config.json`** 的 **`projects`** 解析到的**可选项目名**（与交互菜单一致，优先用户配置目录）。
+**manifest 与制品（两个知识库「文件」节点）**：
 
-本帮助**不**单独打印 Typer 的 `Usage:` 长行，也**无**文末大段 epilog；命令行形式见下节 **ARGS**。可选：设置 **`NO_COLOR=1`**（或 `TERM=dumb`）以减弱终端彩色输出。
+| 用途 | 常量 | 知识库链接 |
+|------|------|------------|
+| 默认 manifest（JSON） | **`DEFAULT_MANIFEST_FILE_TOKEN`**（= **`DEFAULT_FEISHU_WIKI_MANIFEST_NODE_TOKEN`**） | [manifest 文件节点](https://t83dfrspj4.feishu.cn/wiki/FSSpwYBwIioeN3ksc72cvCU4ncg) |
+| 安装包（`manifest` 内 **`archive_file_token`**） | **`DEFAULT_FEISHU_WIKI_ARCHIVE_NODE_TOKEN`** | [安装包节点](https://t83dfrspj4.feishu.cn/wiki/MaGVwCGz9iUQ6ekJb5MckijYnAb) |
 
-实现要点：**`autodrivekit/adk_rich_help.py`**（分区与样式）、**`platform_info.py`**（页眉字段）。
+下载时先走 Drive；**HTTP 404** 时再 **`wiki/v2/spaces/get_node`**，仅当节点 **`obj_type` 为 `file`** 时用 **`obj_token`** 继续走 Drive。覆盖默认 manifest 来源：在 **`~/.config/adk/adk.json`** 的 **`feishu_update.manifest_file_token`** 填写，或设置 **`ADK_FEISHU_MANIFEST_FILE_TOKEN`**（一般与上表 manifest 节点 token 一致，即 **`FSSpwYBwIioeN3ksc72cvCU4ncg`**）。
 
-**交互式菜单（仅输入 `adk`）**：界面用 **Rich** 的 **Panel / Rule** 分区。**步骤 1** 选择工具包；若该工具在 `adk-tool.json` 中配置了 **`interactive_project_pick`**（如 **property**、**cfg-word**、**vhal-svc**），则 **步骤 2 选择项目**，**步骤 3** 为说明与参数（**`choices`** / **`examples`**）；未配置时 **步骤 2** 即为说明与参数。**退出**：步骤 1 与项目选择步骤可输入 **`0` / `q` / `quit` / `exit` / 直接回车**；参数行输入 **`q` / `quit` / `exit`**（参数行**回车**仍表示「默认执行」，与退出区分）。
+**manifest JSON 字段**：
 
-### ARGS 是什么
+- **`version`**：语义化版本号（高于当前 `autodrivekit.__version__` 时才安装）  
+- **`archive_file_token`**：制品；可为 **Drive `file_token`** 或 **知识库「文件」节点 token**（默认与上表安装包节点 **`MaGVwCGz9iUQ6ekJb5MckijYnAb`** 一致）。**`download_file_to_path`** 与 manifest 下载逻辑一致，支持 wiki 节点解析后再下载。  
+- **`filename`**：本地保存名（如 `autodrivekit-1.1.0.tar.gz`）  
+- **`sha256`**（可选但强烈建议）：小写十六进制；与制品字节一致  
 
-命令行一般形式为 **`adk [通用选项] <子命令> [ARGS]...`**。其中 **`<子命令>`** 多为 **`adk-tool.json` 注册的 `id`**（即工具包名）；**`update`** 为平台内置子命令（非工具包）。**`[ARGS]`** 写在子命令之后时，对工具包按顺序**原样透传**给该工具入口（默认 `main.py`），与在该工具目录执行 `python3 main.py …` 等价；对 **`update`** 则为其 Typer 选项（见 **`adk update -h`**）。具体参数由各子命令自行定义。
+**约束**：同一 wiki 节点 token **不能**同时作为「manifest JSON」与「安装包」两种不同内容的来源；当前默认已拆成**两个节点**。
 
-### 一条龙（直接跑某工具包流水线）
+**说明**：manifest 节点在飞书中须为 **「文件」**（`obj_type=file`）且内容为合法 JSON，`adk update` 才能通过 API 拉取。若误用 **飞书文档（docx）** 页作为节点，请改为 **文件** 节点或 Drive `file_token`。
 
-不写交互菜单时，可用 **`adk <工具包> <参数…>`** 直接执行，例如（默认跑该工具文档中的**完整流水线**，具体步骤因工具而异）：
+自建应用需 **Drive 下载**、**wiki 节点可读** 等权限，并将应用添加为知识库/文件协作者。  
 
-```bash
-adk cfg-word n50           # cfg-word：对项目 n50 跑默认全流程
-adk property BAIC          # property：对项目 BAIC 跑 scan+fetch+generate+deploy+snapshot（默认）
-```
+安装目录为 **`~/.local/opt/adk/releases/<版本>/`**，并通过符号链接 **`~/.local/opt/adk/current`** 做**原子切换**。更新完成后，**配置迁移在下次执行任意非 `update` 的 `adk` 命令时执行**（B 方案）。未走 `pip install` 时，可在发布树根目录使用仓库内 **`adk_launch.py`** 启动 CLI，并将该路径加入 `PATH`。
 
-单步或自定义组合仍写在 **`ARGS`** 中，与各工具 `main.py` 一致：
+### 发布脚本（维护者）
 
-```bash
-adk property --help          # 与各工具 python3 main.py --help 相同
-adk property -l
-adk cfg-word --help
-adk cfg-word sync n50
-```
+在仓库根目录：
 
-平台对工具包入口**不拦截** `--help` / `-h`，会透传给工具，因此可直接使用 **`adk <工具包> --help`**。若将来遇到与 Typer 冲突的极少数选项，仍可使用 **`adk <工具包> -- <参数…>`** 强制透传。
+1. **`./scripts/pack_adk_release.sh`** — 按 `pyproject.toml` 版本号生成 **`release/autodrivekit-<ver>.tar.gz`** 及 **`.sha256`**（已排除 `.git`、`egg-info`、虚拟环境等）。
+2. **`PYTHONPATH=. python3 scripts/publish_release_feishu.py`** — 根据本地 tar 计算 **`sha256`**，在 **`release/manifest-<ver>.json`** 写入正式 manifest（**`archive_file_token`** = **`DEFAULT_FEISHU_WIKI_ARCHIVE_NODE_TOKEN`**）。可选将 manifest JSON **上传**到云空间根目录并打印 **`file_token`**（用于改走 Drive manifest；默认仍以 wiki manifest 节点为准）。
+3. **`PYTHONPATH=. python3 scripts/wiki_release_upload.py`** — 校验两个 wiki 文件节点并打印在飞书网页 **「上传新版本」** 时应选择的本地文件路径与链接（开放接口无法完整替代该 UI 操作，见脚本说明）。
 
-> **说明**：**cfg-word** 工具自身另有 **`-V`**（大写）表示 **validate**，与平台 **`adk -v`**（版本）不同；请写在 **`adk cfg-word …`** 之后，例如 `adk cfg-word -V n50`。
-
-### 未安装 `adk` 脚本时
-
-```bash
-python3 -m autodrivekit
-python3 -m autodrivekit property -l
-```
-
-## 各工具包 README 索引
-
-平台本文仅说明 **安装、`adk` 用法与生态约定**；**每个工具包的完整说明**以对应目录下的 **`README.md`** 为准（参数、示例、`config.json`、流水线步骤等）。
-
-| 工具包 | 路径 | 说明 |
-|--------|------|------|
-| **property** | [**tools/tool_property/README.md**](tools/tool_property/README.md) | CarProperty：fetch / generate / deploy、`config.json`、多变体、部署与安全校验等 |
-| **cfg-word** | [**tools/tool_cfg_word/README.md**](tools/tool_cfg_word/README.md) | 配置字：parse → sync → validate → property-sync → generate → deploy、飞书与 `vehicle_config_byte_count` 等 |
-| **vhal-svc** | [**tools/tool_vhal_svc/README.md**](tools/tool_vhal_svc/README.md) | 飞书拉表、生成、deploy.files 拷贝至 hal/vehicleservice |
-
-在仓库内跳转：上述链接均为相对路径（以本文件所在目录为根）。若使用 Git 托管前端浏览，也可从本页顶部的「命名与定位」表直接点入各工具 **README** 列。
+---
 
 ## 工具生态：如何新增或扩展工具
 
@@ -318,7 +413,7 @@ python3 -m autodrivekit property -l
 
 ### 版本历史（平台）
 
-> **维护约定**：**每次发版 bump 平台版本时**，须在本表 **顶部追加一行**（新版本在上），并同步更新 **`pyproject.toml`**、**`autodrivekit/__init__.py`** 与 [**docs/ADK平台说明.md**](docs/ADK平台说明.md) **§8.2 版本历史**表（两处版本历史 **须一致**，不得只改一处）；日期与摘要以实际 Release 或内部发版说明为准。
+> **维护约定**：**每次发版 bump 平台版本时**，须在本表 **顶部追加一行**（新版本在上），并同步更新 **`pyproject.toml`**、**`autodrivekit/__init__.py`** 与 [**docs/ADK平台使用手册.md**](docs/ADK平台使用手册.md) **§8 版本历史**表（两处版本历史 **须一致**，不得只改一处）；日期与摘要以实际 Release 或内部发版说明为准。
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
@@ -331,3 +426,27 @@ python3 -m autodrivekit property -l
 | **0.3.0** | 2026/4/9 | 平台与 **property** / **cfg-word** 等工具包当前能力基线。 |
 | **0.2.0** | 2026/4/7 | 完成 **adk** 平台框架搭建。 |
 | **0.1.0** | 2026/4/1 | 实现 **property** 工具包能力。 |
+
+---
+
+## 常见问题
+
+| 现象 | 建议处理 |
+|------|----------|
+| `adk: command not found` | 确认已在仓库根执行 `pip install -e .`，且当前 shell 的 `PATH` 含脚本目录 |
+| 缺少 Typer | 按终端提示安装平台包；或手动 `pip install -e .` |
+| 启动即报错并指向某 `adk-tool.json` | 检查该文件 JSON 是否有效、`id` 是否与其它工具重复、`entry` 路径是否存在 |
+| 飞书 API 报 `403` / `99991663` | 检查应用权限是否已审批生效、目标文档是否已添加应用为协作者（见 [飞书配置 §3](#3-在飞书在线表格--文档上为自建应用授权协作者权限)） |
+| 环境变量已配但 `adk` 提示未设置 | 确认在**同一终端**中运行（IDE 内置终端需重启）；若从图形界面启动需在 profile 中 `export` |
+| `adk update` 报 manifest 节点 `obj_type='docx'` | manifest 须为知识库「文件」节点挂载的 JSON，不能是飞书文档页；详见 [用户配置与在线更新](#用户配置--数据目录与在线更新) |
+| `vhal-svc` 报用户路径下无 `tool_vhal_svc` | 手动 `mkdir -p ~/.local/share/adk/tool_vhal_svc`，或升级至含预创建逻辑的版本 |
+| 交互里想退出 | 步骤 1/项目选择用 `q`/`0`/回车等；参数行用 `q` 类关键字；**勿**与「回车执行默认」混淆 |
+| 工具行为与预期不符 | 先执行 `adk <id> --help`，再对照该工具 README；仍不明请填写 [飞书反馈表](https://t83dfrspj4.feishu.cn/wiki/HNZewVPZQiJCVFkpD2wc5SsAnYf) |
+
+更完整的排障说明见 [docs/ADK平台使用手册.md](docs/ADK平台使用手册.md) §9。
+
+---
+
+## 反馈
+
+使用中遇到问题或有改进建议，欢迎在 **[ADK 使用跟踪与反馈表](https://t83dfrspj4.feishu.cn/wiki/HNZewVPZQiJCVFkpD2wc5SsAnYf)** 中填写。
