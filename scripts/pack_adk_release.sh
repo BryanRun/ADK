@@ -10,6 +10,8 @@ NAME="autodrivekit-${VERSION}.tar.gz"
 OUT="$REL/$NAME"
 
 mkdir -p "$REL"
+# 清理旧版本产物
+rm -f "$REL"/autodrivekit-*.tar.gz "$REL"/autodrivekit-*.tar.gz.sha256 "$REL"/manifest-*.json
 echo "  版本: $VERSION"
 echo "  输出: $OUT"
 
@@ -29,8 +31,15 @@ tar -czf "$OUT" \
   --exclude='./release' \
   .
 
-sha256sum "$OUT" | awk '{print $1 "  '"$NAME"'"}' > "$REL/${NAME}.sha256"
-echo "  sha256 已写入: $REL/${NAME}.sha256"
+# 对源码文件树计算 sha256（排除 xlsx 等会被飞书改写的二进制文件）
+PYTHONPATH="$ROOT" python3 -c "
+import sys
+from autodrivekit.archive_hash import sha256_tar_tree
+from pathlib import Path
+sha = sha256_tar_tree(Path(sys.argv[1]))
+print(sha + '  ' + sys.argv[2])
+" "$OUT" "$NAME" > "$REL/${NAME}.sha256"
+echo "  sha256（源码文件树）已写入: $REL/${NAME}.sha256"
 
 TMP="$(mktemp -d)"
 tar -xzf "$OUT" -C "$TMP"

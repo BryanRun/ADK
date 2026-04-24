@@ -69,6 +69,40 @@ def _parse_downloaded_json(content: bytes) -> Any:
     return obj
 
 
+def _unwrap_extra_gzip(path: Path) -> None:
+    """若文件被飞书 CDN 额外包了一层 gzip，则原地剥离外层。
+
+    对于 .tar.gz 等本身就是 gzip 的制品：CDN 额外包一层后变成 "gzip(gzip(tar))"，
+    解压一层后内容仍以 gzip 魔术字节开头，说明确实被双重压缩，写回解压结果。
+    对于非 gzip 制品（如 .xlsx）：CDN 额外包一层后变成 "gzip(xlsx)"，
+    解压一层后内容不以 gzip 魔术字节开头，也应写回解压结果。
+    关键判定：文件以 gzip 魔术字节开头且能成功解压，说明被 CDN 包了一层。
+    但需排除 tar.gz 本身就是单层 gzip 的正常情况——此时解压后不会再以 gzip 开头，
+    所以对 .gz 文件：仅当解压后仍以 gzip 开头（双重压缩）时才写回。
+    对非 .gz 文件：解压后写回（CDN 对普通文件包了一层 gzip）。
+    """
+    try:
+        with open(path, "rb") as f:
+            magic = f.read(2)
+        if magic != b"\x1f\x8b":
+            return
+        raw = path.read_bytes()
+        decompressed = gzip.decompress(raw)
+        if not decompressed:
+            return
+        name_lower = path.name.lower()
+        is_gz_file = name_lower.endswith(".gz") or name_lower.endswith(".tgz")
+        if is_gz_file:
+            # .gz 文件本身就是 gzip，只有解压后仍以 gzip 魔术字节开头才说明被双重压缩
+            if decompressed[:2] == b"\x1f\x8b":
+                path.write_bytes(decompressed)
+        else:
+            # 非 .gz 文件被 CDN 包了 gzip，直接解压还原
+            path.write_bytes(decompressed)
+    except (gzip.BadGzipFile, OSError):
+        pass
+
+
 def download_file_to_path(
     token: str,
     file_token: str,
@@ -127,6 +161,7 @@ def download_file_to_path(
                     if chunk:
                         f.write(chunk)
             tmp.replace(dest)
+            _unwrap_extra_gzip(dest)
         finally:
             if tmp.is_file() and not dest.is_file():
                 try:

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import fcntl
-import hashlib
 import os
 import shutil
 import tarfile
@@ -15,6 +14,7 @@ from typing import Any
 import typer
 
 from autodrivekit import __version__ as LOCAL_VERSION
+from autodrivekit.archive_hash import sha256_tar_tree
 from autodrivekit.config_migrate import manifest_file_token_from_settings
 from autodrivekit.feishu_auth import get_tenant_access_token
 from autodrivekit.feishu_drive import download_file_to_path, download_json_file
@@ -90,14 +90,6 @@ def _find_extract_root(extracted: Path) -> Path:
     )
 
 
-def _sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
 def _extract_archive(archive: Path, dest_dir: Path) -> Path:
     dest_dir.mkdir(parents=True, exist_ok=True)
     name = archive.name.lower()
@@ -127,6 +119,33 @@ def _atomic_switch_current(new_release: Path) -> None:
             shutil.rmtree(tmp, ignore_errors=True)
     os.symlink(new_release.resolve(), tmp, target_is_directory=True)
     os.replace(tmp, cur)
+
+
+def _ensure_adk_entry_point() -> None:
+    """确保 ~/.local/bin/adk 指向 managed install 的 adk_launch.py。
+
+    若 adk 入口是 pip 生成的脚本（非符号链接），则替换为指向
+    current/adk_launch.py 的符号链接，使 adk update 后命令立即生效。
+    """
+    bin_dir = Path.home() / ".local" / "bin"
+    adk_bin = bin_dir / "adk"
+    launch = managed_current_link() / "adk_launch.py"
+    if not launch.exists():
+        return
+    try:
+        if adk_bin.is_symlink():
+            target = adk_bin.resolve()
+            # 已经指向 managed install 中的 adk_launch.py，无需处理
+            if "adk_launch.py" in target.name:
+                return
+        # 替换为符号链接（无论原来是 pip 脚本还是其他符号链接）
+        if adk_bin.exists() or adk_bin.is_symlink():
+            adk_bin.unlink()
+        bin_dir.mkdir(parents=True, exist_ok=True)
+        os.symlink(launch, adk_bin)
+        typer.echo(f"  已将 {adk_bin} 指向 {launch}")
+    except OSError as e:
+        typer.echo(f"  警告：无法更新 {adk_bin}：{e}", err=True)
 
 
 def run_update(*, dry_run: bool, check_only: bool) -> None:
@@ -193,8 +212,10 @@ def run_update(*, dry_run: bool, check_only: bool) -> None:
 
         download_file_to_path(token, archive_token, archive_path)
 
-        if expect_sha and _sha256_file(archive_path).lower() != expect_sha:
-            raise UpdateError("sha256 校验失败：文件可能损坏或被篡改。")
+        if expect_sha:
+            actual_sha = sha256_tar_tree(archive_path).lower()
+            if actual_sha != expect_sha:
+                raise UpdateError("sha256 校验失败：文件可能损坏或被篡改。")
 
         extract_dir = staging_root / "extracted"
         root = _extract_archive(archive_path, extract_dir)
@@ -206,10 +227,10 @@ def run_update(*, dry_run: bool, check_only: bool) -> None:
         shutil.move(str(root), str(rel))
 
         _atomic_switch_current(rel)
+        _ensure_adk_entry_point()
         typer.echo(f"  已安装到 {rel}，并已切换 {managed_current_link()} 指向该版本。")
         typer.echo(
-            "  请将 PATH 优先包含解压树中的启动入口（见仓库根 adk_launch.py），"
-            "或在新根目录执行 pip install -e .；配置迁移将在下次运行 adk（非 update）时执行。"
+            "  配置迁移将在下次运行 adk（非 update）时执行。"
         )
     finally:
         _release_update_lock(lock_fp)
