@@ -322,6 +322,7 @@ python3 -m autodrivekit property -l
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
+| **1.2.3** | 2026/4/24 | 1. `adk -h` help 页面修复：`--help` 文案改为中文、交互面板方向引用修正、文档补充 `doctor` 命令。2. **property** 升至 v1.2.1：修复 `fetch_project` 函数定义缺失导致 scan 后 fetch 报错；README 补充 scan 版本校验、流水线失败语义。 |
 | **1.2.2** | 2026/4/22 | sha256 校验改为源码文件树级别，兼容飞书 wiki 文件节点对上传文件的 gzip/tar/xlsx 改写。 |
 | **1.2.1** | 2026/4/22 | 修复飞书 CDN 对下载文件额外包裹 gzip 导致 `adk update` sha256 校验失败；发布产物目录改为仓库内 `release/`。 |
 | **1.2.0** | 2026/4/22 | 1. **property** 新增 `scan` 在线差异扫描命令（飞书与本地逐单元格对比、颜色高亮）；2. **property** `snapshot` 独立为单独命令，流水线扩展为 scan → fetch → generate → deploy → snapshot 五步；3. 修复飞书 CDN 返回 gzip 压缩 manifest 时的解码异常。 |

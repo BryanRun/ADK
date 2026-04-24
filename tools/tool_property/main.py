@@ -32,7 +32,7 @@ import argparse
 import subprocess
 from datetime import datetime
 
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)

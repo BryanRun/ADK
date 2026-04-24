@@ -425,7 +425,7 @@ flowchart TB
 
 ### 8.1 当前版本
 
-- 与 **`adk -v`** / **`adk --version`** 一致的平台版本，以安装后的 **`autodrivekit`** 包元数据为准；源码树中 **`autodrivekit/__init__.py`**（`__version__`）与 **`pyproject.toml`** 的 **`[project] version`** 应保持一致（编写本文时同步值为 **1.2.2**）。
+- 与 **`adk -v`** / **`adk --version`** 一致的平台版本，以安装后的 **`autodrivekit`** 包元数据为准；源码树中 **`autodrivekit/__init__.py`**（`__version__`）与 **`pyproject.toml`** 的 **`[project] version`** 应保持一致（编写本文时同步值为 **1.2.3**）。
 
 ### 8.2 版本历史
 
@@ -433,6 +433,7 @@ flowchart TB
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
+| **1.2.3** | 2026/4/24 | 1. `adk -h` help 页面修复：`--help` 文案改为中文、交互面板方向引用修正、文档补充 `doctor` 命令。2. **property** 升至 v1.2.1：修复 `fetch_project` 函数定义缺失导致 scan 后 fetch 报错；README 补充 scan 版本校验、流水线失败语义。 |
 | **1.2.2** | 2026/4/22 | sha256 校验改为源码文件树级别，兼容飞书 wiki 文件节点对上传文件的 gzip/tar/xlsx 改写。 |
 | **1.2.1** | 2026/4/22 | 修复飞书 CDN 对下载文件额外包裹 gzip 导致 `adk update` sha256 校验失败；发布产物目录改为仓库内 `release/`。 |
 | **1.2.0** | 2026/4/22 | **property（minor）**：新增 `scan` 在线差异扫描（飞书与本地 Excel 逐单元格对比、颜色高亮增/删/改、版本一致性校验、流水线门控）；`snapshot` 独立为单独命令；流水线扩展为 scan → fetch → generate → deploy → snapshot 五步。**平台**：修复 `feishu_drive` 处理 gzip 压缩 manifest 的 UTF-8 解码异常。 |
@@ -565,5 +566,5 @@ Typer、Rich、openpyxl、Jinja2、requests 等；精确版本范围以仓库内
 
 ---
 
-**文档版本**：与平台版本同步维护（当前正文对齐 **1.2.2**）。  
+**文档版本**：与平台版本同步维护（当前正文对齐 **1.2.3**）。  
 **本地路径**：`1_ToolChain/0_AutoDriveKit/docs/ADK平台说明.md`
