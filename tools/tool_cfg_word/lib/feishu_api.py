@@ -301,7 +301,8 @@ def get_app_name(token) -> str:
     )
     data = r.json()
     if data.get("code") != 0:
-        print(red(f"  ✘ 获取应用名称失败: {data.get('msg')}"))
+        from lib.term_color import yellow as _yellow
+        print(_yellow(f"  ⚠ 获取应用名称失败（不影响 property-sync）: {data.get('msg')}"))
         _app_name_cache["name"] = ""
         return ""
     name = data.get("data", {}).get("app", {}).get("app_name", "")

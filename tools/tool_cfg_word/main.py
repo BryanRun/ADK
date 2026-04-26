@@ -16,7 +16,7 @@ import sys
 from lib.term_color import green, red, yellow
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 CONFIG_FILE = "config.json"
 NAME_MAPPING_FILE = "name_mapping.json"
 
@@ -124,10 +124,22 @@ def step_parse(project_name, project_config, cfg):
     mapping = load_mapping(project_name)
     items, missing = apply_mapping(items, mapping)
     if missing:
-        print(red(f"  ✘ 以下配置项缺少英文宏名映射，请补充 {NAME_MAPPING_FILE}:"))
-        for m in missing:
-            print(red(f"    - \"{m}\""))
-        return None
+        from lib.feishu_config import resolve_feishu_sheet_for_project
+        from lib.name_mapping import init_mapping_from_feishu
+
+        resolved = resolve_feishu_sheet_for_project(cfg, project_config, verbose=False)
+        if resolved[0] is not None:
+            _tok, spreadsheet, sheet_id = resolved
+            print(yellow(f"  ⚠ {len(missing)} 个配置项缺少映射，尝试从飞书自动拉取..."))
+            init_mapping_from_feishu(project_name, spreadsheet, sheet_id)
+            mapping = load_mapping(project_name)
+            items, missing = apply_mapping(items, mapping)
+
+        if missing:
+            print(red(f"  ✘ 以下配置项缺少英文宏名映射，请补充 {NAME_MAPPING_FILE}:"))
+            for m in missing:
+                print(red(f"    - \"{m}\""))
+            return None
 
     return items
 

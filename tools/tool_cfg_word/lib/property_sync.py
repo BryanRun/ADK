@@ -152,6 +152,20 @@ def sync_psis_car_cfg(token, spreadsheet, sheet_id, items, sheet_name="") -> boo
     return True
 
 
+def _set_cell_date_format(token, spreadsheet, sheet_id, row_1based):
+    """将 B 列单元格格式设为日期。"""
+    import requests
+    from lib.feishu_api import BASE, _headers, _rate_limit
+
+    range_str = f"{sheet_id}!B{row_1based}:B{row_1based}"
+    _rate_limit()
+    requests.put(
+        f"{BASE}/sheets/v2/spreadsheets/{spreadsheet}/styles_batch_update",
+        headers=_headers(token),
+        json={"data": [{"ranges": [range_str], "style": {"formatter": "yyyy/MM/dd"}}]},
+    )
+
+
 def _append_change_history(
     token, spreadsheet, sheet_name, updated_names, appended_names
 ) -> bool:
@@ -163,7 +177,7 @@ def _append_change_history(
     history_sheet_id = None
     for sh in sheets:
         t = sh.get("title") or sh.get("sheet_title") or ""
-        if str(t).strip() == "changeHistory":
+        if str(t).strip().lower() == "changehistory":
             history_sheet_id = sh.get("sheet_id") or sh.get("id")
             break
     if not history_sheet_id:
@@ -193,15 +207,19 @@ def _append_change_history(
     label = sheet_name or "psis.car_cfg"
     summary = f"{label}: {'; '.join(parts)}"
 
-    app_name = get_app_name(token)
-    today = date.today().strftime("%Y-%m-%d")
+    app_name = get_app_name(token) or "HUALEI AI FLOW"
+    today = date.today()
+    date_serial = (today - date(1899, 12, 30)).days
 
     rng = f"{history_sheet_id}!B{insert_row_1}:D{insert_row_1}"
-    row_data = [today, app_name, summary]
-    if write_sheet(token, spreadsheet, rng, [row_data]):
-        print(f"  changeHistory 已追加: {today} | {summary}")
-        return True
-    else:
+    row_data = [date_serial, app_name, summary]
+    if not write_sheet(token, spreadsheet, rng, [row_data]):
         print(red("  ✘ changeHistory 写入失败"))
         return False
+
+    _set_cell_date_format(token, spreadsheet, history_sheet_id, insert_row_1)
+    changed = [(insert_row_1 - 1, c) for c in range(1, 4)]  # B~D, 0-indexed row/col
+    batch_set_cell_bg_colors(token, spreadsheet, history_sheet_id, changed, "#FFFF00")
+    print(f"  changeHistory 已追加: {today} | {summary}")
+    return True
 
