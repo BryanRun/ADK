@@ -1,6 +1,6 @@
 # AutoDriveKit
 
-![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-green) ![Version](https://img.shields.io/badge/Version-1.2.3-orange)
+![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-green) ![Version](https://img.shields.io/badge/Version-1.2.5-orange)
 
 **AutoDriveKit**（简称 **ADK**）是**统一工具平台**：为车辆相关代码生成与配置同步提供**单一 CLI 入口** `adk`。每个工具以**独立工具包**形式放在固定目录下，通过清单注册后即可被 `adk` 识别，实现「即插即用」。
 
@@ -417,6 +417,7 @@ $env:FEISHU_APP_SECRET="你的AppSecret"
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
+| **1.2.5** | 2026/4/26 | 1. **cfg-word** 升至 v1.1.0：新增 snapshot 流水线步骤（sync 后自动创建飞书版本快照）；property-sync 的"通知周期"和"默认值"列改为数字类型写入；property-sync 变更后自动在 changeHistory 子表追加记录 2. 修复 `__version__` 硬编码导致 `adk update` 后版本号不更新，改为自动从 `pyproject.toml` 读取 |
 | **1.2.3** | 2026/4/24 | 1. `adk -h` help 页面修复：`--help` 文案改为中文、交互面板方向引用修正、文档补充 `doctor` 命令。2. **property** 升至 v1.2.1：修复 `fetch_project` 函数定义缺失导致 scan 后 fetch 报错；README 补充 scan 版本校验、流水线失败语义。 |
 | **1.2.2** | 2026/4/22 | sha256 校验改为源码文件树级别，兼容飞书 wiki 文件节点对上传文件的 gzip/tar/xlsx 改写。 |
 | **1.2.1** | 2026/4/22 | 修复飞书 CDN 对下载文件额外包裹 gzip 导致 `adk update` sha256 校验失败；发布产物目录改为仓库内 `release/`。 |

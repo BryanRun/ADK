@@ -266,6 +266,7 @@ adk doctor
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
+| **1.2.5** | 2026/4/26 | 1. **cfg-word** 升至 v1.1.0：新增 snapshot 流水线步骤（sync 后自动创建飞书版本快照）；property-sync 的"通知周期"和"默认值"列改为数字类型写入；property-sync 变更后自动在 changeHistory 子表追加记录 2. 修复 `__version__` 硬编码导致 `adk update` 后版本号不更新，改为自动从 `pyproject.toml` 读取 |
 | **1.2.3** | 2026/4/24 | 1. `adk -h` help 页面修复：`--help` 文案改为中文、交互面板引用修正、补充 `doctor` 命令说明 2. **property** 升至 v1.2.1：修复 `fetch_project` 函数定义缺失导致 scan 后 fetch 报错 3. `adk update` 后自动将入口指向 managed install，无需手动创建符号链接 |
 | **1.2.2** | 2026/4/22 | 1. sha256 校验改为源码文件树级别，兼容飞书 wiki 文件节点对上传文件的 gzip/tar/xlsx 改写 |
 | **1.2.1** | 2026/4/22 | 1. 修复飞书 CDN 对下载文件额外包裹 gzip 导致 `adk update` sha256 校验失败 2. 发布产物目录从外部目录改为仓库内 `release/` 3. 打包时自动清理 `release/` 下的旧版本产物 |
@@ -354,4 +355,4 @@ adk doctor
 
 ---
 
-**文档版本**：对齐平台 **1.2.3**
+**文档版本**：对齐平台 **1.2.5**
