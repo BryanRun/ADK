@@ -327,7 +327,8 @@ cfg-word 工具包需要以下飞书权限：
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
 | **1.0.0** | 2026/4/9 | 1. 实现本地 Excel 配置字解析（parse），支持多种表格版式解析器（ACIC、ICC、Coding DID） 2. 实现飞书中间表差分同步（sync），变更单元格自动高亮 3. 实现 BYTE/BIT 校验（validate），含 bit 之和、字节覆盖完整性检查 4. 实现 Property 表增量更新（property-sync），弱依赖不阻断后续步骤 5. 实现 `cfg_cal.h` 代码生成（generate）与 Git 仓库部署（deploy） 6. 实现中文→英文宏名映射管理（name_mapping.json + init-mapping） 7. 实现缺失字节自动补全（vehicle_config_byte_count 配置） 8. 多项目支持，独立配置、独立流水线、互不影响 |
+| **1.1.0** | 2026/4/26 | 1. 新增 snapshot 流水线步骤，sync 后自动为飞书中间表创建命名版本快照 2. property-sync 的"通知周期"和"默认值"列改为数字类型写入 3. property-sync 变更后自动在 changeHistory 子表追加记录（日期、应用名、变更摘要） 4. 新增飞书应用名获取（get_app_name） 5. 首次使用体验优化：输入目录/文件缺失时给出明确路径提示 |
 
 ---
 
-**文档版本**：对齐工具包 **v1.0.0**
+**文档版本**：对齐工具包 **v1.1.0**

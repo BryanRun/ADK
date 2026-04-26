@@ -16,7 +16,7 @@ import sys
 from lib.term_color import green, red, yellow
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 CONFIG_FILE = "config.json"
 NAME_MAPPING_FILE = "name_mapping.json"
 
