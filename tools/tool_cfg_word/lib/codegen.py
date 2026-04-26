@@ -1,7 +1,7 @@
 """cfg_cal.h 代码生成器。
 
-从 vehicleConfigGen++ 提取重构，改为接收内存中的 ConfigItem 列表，
-不再直接读取 Excel 文件。
+接收内存中的 ConfigItem 列表，生成 cfg_cal.h 头文件，
+不直接读取 Excel 文件。
 """
 
 import datetime

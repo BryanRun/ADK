@@ -2,22 +2,22 @@
 
 **平台 CLI：`vhal-svc`**（暂定名）— 基于 **飞书 VHAL 矩阵表**，在本地调用内嵌 **VehicleGenerateTool**，生成 **vehicleservice** 侧产物，并按规则拷贝到目标 Git 仓库；可选执行占位或真实 **compile**。平台总说明见 [AutoDriveKit README](../../README.md)；在仓库根 **`pip install -e .`** 后推荐使用 **`adk vhal-svc …`**，参数与本目录 **`python3 main.py …`** 完全一致。
 
-## 文档导航
+## 1. 文档导航
 
 （以下为本文小节索引，与正文标题一致。）
 
-- **能力一览** — 默认流水线、强依赖、跳过语义
-- **调用方式** — `adk` 与 `python3`、版本号
-- **流水线说明** — 四步行为摘要
-- **流水线图（PlantUML）** — 强依赖活动图
-- **快速开始** — 常用命令
-- **目录结构** — 仓库内布局
-- **配置说明** — `config.json` 字段
-- **各步骤细节** — fetch、generate、deploy、compile
-- **常见问题** — 排错提示
-- **暂定命名** — CLI 与目录名
+- **2. 能力一览** — 默认流水线、强依赖、跳过语义
+- **3. 调用方式** — `adk` 与 `python3`、版本号
+- **4. 流水线说明** — 四步行为摘要
+- **5. 流水线图（PlantUML）** — 强依赖活动图
+- **6. 快速开始** — 常用命令
+- **7. 目录结构** — 仓库内布局
+- **8. 配置说明** — `config.json` 字段
+- **9. 各步骤细节** — fetch、generate、deploy、compile
+- **10. 常见问题** — 排错提示
+- **11. 暂定命名** — CLI 与目录名
 
-## 能力一览
+## 2. 能力一览
 
 | 动作 | 短选项 | 说明 |
 |------|--------|------|
@@ -34,7 +34,7 @@
 
 **强依赖含义**：对单个项目，仅当 `fetch`（若在本轮动作中）已成功、`generate` 已成功……依此类推，`deploy` / `compile` 才会执行；上游失败时下游打印「已跳过」且本次运行记为失败（`sys.exit(1)`）。
 
-## 调用方式
+## 3. 调用方式
 
 - **推荐**：`adk vhal-svc …`（需在 AutoDriveKit 根目录已执行 `python3 -m pip install -e .`）。
 - **本目录**：`cd tools/tool_vhal_svc && python3 main.py …`。
@@ -43,7 +43,7 @@
 
 仅输入 **`adk`** 并选择本工具时，若 **`adk-tool.json`** 配置了 **`interactive_project_pick`**，会先选 **`projects`** 中的项目键，再填写参数或回车执行默认四步。
 
-## 流水线说明
+## 4. 流水线说明
 
 ```text
 飞书 VHAL 表 ──[fetch]──► input/<项目>/标题.xlsx
@@ -64,7 +64,7 @@
 - **凭证**：真正执行 **fetch** 且配置了飞书 URL 时，需要环境变量 **`FEISHU_APP_ID`**、**`FEISHU_APP_SECRET`**（与 **`adk property fetch`** 相同，见根目录 README「飞书自建应用与环境变量」）。
 - **产物**：生成脚本在 **`vehicle_generate/Result<project_code>/`** 下产出；默认会将该目录**整棵同步**到 **`generate.output_dir`**（受 **`copy_result_dir`** 控制）。
 
-## 流水线图（PlantUML）
+## 5. 流水线图（PlantUML）
 
 下列 **`@startuml` … `@enduml`** 块为 **PlantUML** 源码：可用 [PlantUML 在线服务](https://www.plantuml.com/plantuml/uml/) 或 IDE 的 PlantUML 插件渲染为图片。
 
@@ -105,7 +105,7 @@ stop
 @enduml
 ```
 
-## 快速开始
+## 6. 快速开始
 
 ```bash
 adk vhal-svc -v                    # 本工具版本
@@ -127,7 +127,7 @@ adk vhal-svc generate n5x
 
 默认会**抑制** VehicleGenerateTool 的大量 `[Information]` 行，仅打印一行摘要；失败时打印 **stderr** 与 **stdout 末尾约 80 行**。
 
-## 目录结构
+## 7. 目录结构
 
 ```text
 tools/tool_vhal_svc/
@@ -145,11 +145,11 @@ tools/tool_vhal_svc/
     VENDOR.txt            # 脚本来源说明
 ```
 
-## 配置说明
+## 8. 配置说明
 
 配置根对象除 **`projects`** 外，可有顶层 **`description`**（说明用）。每个**项目键**（如 `n5x`）下常用字段如下。
 
-### 输入、飞书与生成脚本参数
+### 8.1 输入、飞书与生成脚本参数
 
 | 路径 | 必需 / 条件 | 说明 |
 |------|-------------|------|
@@ -160,7 +160,7 @@ tools/tool_vhal_svc/
 | **`vehicle_generate.matrix_file`** | 有条件 | **`auto`** / **`latest`** / 留空：使用 **`input.dir`** 下**修改时间最新**的 **`.xlsx`**（忽略 `~$` 临时文件）。填**具体文件名**则固定打开该文件。 |
 | **`vehicle_generate.map_sheet`** | 配置 generate 时必需 | 矩阵主表名，如 **`releaseMap`**（脚本第三参数）。 |
 
-### 生成输出、部署与编译
+### 8.2 生成输出、部署与编译
 
 | 路径 | 必需 / 条件 | 说明 |
 |------|-------------|------|
@@ -175,30 +175,30 @@ tools/tool_vhal_svc/
 
 仓库内已预置 **`n5x`**、**`n80`**、**`t1v`** 示例（飞书链接与 **`deploy.files`** 见 **`config.json`** 正文）。
 
-## 各步骤细节
+## 9. 各步骤细节
 
-### fetch
+### 9.1 fetch
 
 - 使用 **`lib/feishu_fetch.py`**：与 **property** 工具类似的 **tenant_access_token** 与导出链（含 Drive 导出失败时的 Sheets API 降级等，详见该模块注释）。
 - 本地文件名：优先取飞书 **`spreadsheet.title`**，将 **`\ / : * ? " < > |`** 等替换为 **`_`**，扩展名 **`.xlsx`**；取标题失败则 **`vhal_matrix.xlsx`**。
 
-### generate
+### 9.2 generate
 
 - 工作目录固定为 **`vehicle_generate/`**；调用形式为：  
   **`python <script> <相对 vehicle_generate/ 的矩阵 xlsx> <project_code> <map_sheet>`**
 - 飞书工作簿须含脚本依赖的 **`Config`** 等工作表（由 **`vehicle_generate_tool_QA.py`** 决定，**不是**本仓库的 **`config.json`**）。缺表需在飞书源表或脚本侧处理。
 - **`VHAL_SVC_GEN_VERBOSE`**：设为 **`1` / `true` / `yes` / `on`**（不区分大小写）时打印完整 stdout/stderr。
 
-### deploy
+### 9.3 deploy
 
 - 从 **`generate.output_dir`** 读取 **`deploy.files[*].source`**，拷贝到 **`deploy.repo` / `<dest>` / `<source 同名文件>`**（先 `makedirs(dest)`，再 **`shutil.copy2`**）。
 - **不执行** **`git commit` / `git push`**；请在本地自行提交。
 
-### compile
+### 9.4 compile
 
 - 当前实现为**通用子进程占位**：在 **`compile.cwd`**（若设）下执行 **`compile.args`** 列表对应的命令；便于后续接入 **`mmm`**、**`ninja`** 等。未配置时链上仍**成功通过**，便于先打通 fetch → deploy。
 
-## 常见问题
+## 10. 常见问题
 
 | 现象 | 处理方向 |
 |------|----------|
@@ -209,7 +209,7 @@ tools/tool_vhal_svc/
 | deploy 报 **源文件不存在** | 确认 **`generate`** 已成功且 **`output_dir`** 下存在 **`deploy.files`** 中的 **`source`** 文件名。 |
 | 强依赖链中途跳过 | 查看该项目**最先失败**的步骤日志；修复后从该步重新执行或跑满链。 |
 
-## 暂定命名
+## 11. 暂定命名
 
 | 项 | 值 |
 |----|-----|
@@ -218,3 +218,9 @@ tools/tool_vhal_svc/
 | **工具包目录** | **`tools/tool_vhal_svc`** |
 
 若后续统一改名（如 `vehicle-hal`），需同步修改 **`adk-tool.json` 的 `id`**、根 [**AutoDriveKit README**](../../README.md) 与本文档。
+
+## 12. 版本历史
+
+| 版本 | 日期 | 变更摘要 |
+|------|------|----------|
+| **0.3.4** | 2026/4/15 | 1. 实现飞书 VHAL 矩阵表自动下载（fetch，含 Drive Export 降级方案）<br>2. 实现 VehicleGenerateTool 生成引擎集成（generate，含输出抑制与冗余模式）<br>3. 实现多文件部署到 Git 仓库（deploy，支持一源多目标与 `deploy.files` 配置）<br>4. 实现编译命令支持（compile，可配置或占位）<br>5. 四步强依赖链管理（fetch → generate → deploy → compile）<br>6. 多项目支持（n5x / n80 / t1v），独立配置、独立流水线 |
