@@ -284,3 +284,43 @@ def batch_set_cell_bg_colors(token, spreadsheet, sheet_id, cells, color):
     if not ok:
         print(red("  ✘ 变更高亮（黄色背景）未完全成功，请检查飞书 API 返回或权限"))
     return ok
+
+
+_app_name_cache = {"name": None}
+
+
+def get_app_name(token) -> str:
+    """获取当前飞书应用名称，结果缓存。"""
+    if _app_name_cache["name"] is not None:
+        return _app_name_cache["name"]
+    _rate_limit()
+    r = requests.get(
+        f"{BASE}/application/v6/applications/me",
+        headers=_headers(token),
+        params={"lang": "zh_cn"},
+    )
+    data = r.json()
+    if data.get("code") != 0:
+        print(red(f"  ✘ 获取应用名称失败: {data.get('msg')}"))
+        _app_name_cache["name"] = ""
+        return ""
+    name = data.get("data", {}).get("app", {}).get("app_name", "")
+    _app_name_cache["name"] = name
+    return name
+
+
+def create_version(token, file_token, name, obj_type="sheet"):
+    """为云文档创建命名版本快照。"""
+    _rate_limit()
+    r = requests.post(
+        f"{BASE}/drive/v1/files/{file_token}/versions",
+        headers=_headers(token),
+        json={"name": name, "obj_type": obj_type},
+    )
+    data = r.json()
+    if data.get("code") != 0:
+        print(red(f"  ✘ 创建版本快照失败: {data.get('msg')}"))
+        return False
+    version = data.get("data", {}).get("version", "")
+    print(f"  版本快照已创建: 「{name}」 (version={version})")
+    return True

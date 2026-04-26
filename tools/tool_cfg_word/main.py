@@ -5,7 +5,7 @@
 
 兼责：在 carpropertylist 在线表格中维护 psis.car_cfg 子表（property-sync）。
 
-流水线: 本地 Excel 解析 → 飞书中间表格同步 → 校验 → 飞书 psis.car_cfg（弱依赖）→ C 头文件生成 → Git 仓库部署
+流水线: 本地 Excel 解析 → 飞书中间表格同步 → 版本快照 → 校验 → 飞书 psis.car_cfg（弱依赖）→ C 头文件生成 → Git 仓库部署
 """
 
 import argparse
@@ -16,7 +16,7 @@ import sys
 from lib.term_color import green, red, yellow
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 CONFIG_FILE = "config.json"
 NAME_MAPPING_FILE = "name_mapping.json"
 
@@ -85,7 +85,12 @@ def step_parse(project_name, project_config, cfg):
 
     excel_path = find_latest_file(input_dir)
     if not excel_path:
-        print(red(f"  ✘ 在 {input_dir} 中未找到 Excel 文件"))
+        if not os.path.isdir(input_dir):
+            print(red(f"  ✘ 输入目录不存在: {input_dir}"))
+            print(yellow(f"    请创建该目录并放入配置字 Excel 文件（.xlsx / .xlsm / .xls）"))
+        else:
+            print(red(f"  ✘ 输入目录中无 Excel 文件: {input_dir}"))
+            print(yellow(f"    请将配置字 Excel 文件（.xlsx / .xlsm / .xls）放入上述目录"))
         return None
 
     print(f"  输入文件: {os.path.basename(excel_path)}")
@@ -181,6 +186,21 @@ def step_validate(project_name, project_config, cfg, items):
     return True
 
 
+def step_snapshot(project_name, project_config, cfg):
+    """为飞书中间表格创建命名版本快照。"""
+    from datetime import datetime
+
+    from lib.feishu_config import resolve_feishu_sheet_for_project
+    from lib.feishu_api import create_version
+
+    resolved = resolve_feishu_sheet_for_project(cfg, project_config, verbose=False)
+    if resolved[0] is None:
+        return False
+    token, spreadsheet, _sheet_id = resolved
+    name = f"{project_name} {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+    return create_version(token, spreadsheet, name)
+
+
 def step_property_sync(project_name, project_config, cfg, items):
     """增量同步解析结果到飞书 Property 表 psis.car_cfg（独立在线表格，见 property_sync）。"""
     from lib.feishu_api import get_token
@@ -201,7 +221,8 @@ def step_property_sync(project_name, project_config, cfg, items):
     spreadsheet, sheet_id = resolve_property_sync_sheet(token, ps, verbose=True)
     if not spreadsheet or not sheet_id:
         return False
-    return sync_psis_car_cfg(token, spreadsheet, sheet_id, items)
+    sheet_name = (ps.get("sheet_name") or "").strip()
+    return sync_psis_car_cfg(token, spreadsheet, sheet_id, items, sheet_name)
 
 # ---------------------------------------------------------------------------
 # Commands
@@ -210,6 +231,7 @@ def step_property_sync(project_name, project_config, cfg, items):
 ACTIONS = {
     "parse",
     "sync",
+    "snapshot",
     "validate",
     "property-sync",
     "generate",
@@ -222,6 +244,7 @@ ACTIONS = {
 SHORT_FLAGS = {
     "p": "parse",
     "s": "sync",
+    "S": "snapshot",
     "V": "validate",
     "P": "property-sync",
     "g": "generate",
@@ -231,7 +254,7 @@ SHORT_FLAGS = {
 
 
 def cmd_run(project_names, actions, all_projects, cfg):
-    """强依赖（失败则中止本项目后续步骤）: parse → sync → validate → generate → deploy。
+    """强依赖（失败则中止本项目后续步骤）: parse → sync → snapshot → validate → generate → deploy。
     弱依赖: property-sync（失败仅告警，继续后续步骤）。"""
     targets = resolve_projects(project_names, all_projects)
     if targets is None:
@@ -239,6 +262,7 @@ def cmd_run(project_names, actions, all_projects, cfg):
 
     do_parse = "parse" in actions
     do_sync = "sync" in actions
+    do_snapshot = "snapshot" in actions
     do_validate = "validate" in actions
     do_property_sync = "property-sync" in actions
     do_gen = "generate" in actions or "gen" in actions
@@ -273,6 +297,13 @@ def cmd_run(project_names, actions, all_projects, cfg):
                 print(red("  ✘ [sync] 失败（强依赖），已中止本项目后续步骤"))
                 continue
             print(green("  ✓ [sync] 成功"))
+
+        if do_snapshot:
+            print("\n[snapshot] 创建飞书版本快照...")
+            if not step_snapshot(pname, pcfg, cfg):
+                print(red("  ✘ [snapshot] 失败（强依赖），已中止本项目后续步骤"))
+                continue
+            print(green("  ✓ [snapshot] 成功"))
 
         if do_validate and items is not None:
             print("\n[validate] 配置字结构校验...")
@@ -317,31 +348,41 @@ def cmd_list(all_projects):
         desc = pcfg.get("description", "")
         input_dir = os.path.join(_WORKSPACE_ROOT, pcfg.get("input", {}).get("dir", ""))
         latest = find_latest_file(input_dir) if input_dir else None
-        latest_name = os.path.basename(latest) if latest else "(未找到)"
-        parser = pcfg.get("input", {}).get("parser", "(未配置)")
+        if latest:
+            latest_disp = os.path.basename(latest)
+        elif not os.path.isdir(input_dir):
+            latest_disp = red(f"(目录不存在: {input_dir})")
+        else:
+            latest_disp = red("(目录中无 Excel 文件)")
+        parser = pcfg.get("input", {}).get("parser", "")
+        parser_disp = parser if parser else red("(未配置)")
         fs_name = pcfg.get("feishu_sheet_name", "")
         sheet_id = pcfg.get("feishu_sheet_id", "")
         feishu_sheet_disp = (
-            f"「{fs_name}」" if fs_name else (sheet_id if sheet_id else "(未配置)")
+            f"「{fs_name}」" if fs_name else (sheet_id if sheet_id else red("(未配置)"))
         )
         bit_order = pcfg.get("bit_order", "reverse")
+        byte_count = pcfg.get("vehicle_config_byte_count")
+        byte_disp = str(byte_count) if byte_count else red("(未配置)")
         deploy = pcfg.get("deploy", {})
-        repo = deploy.get("repo", "(未配置)")
+        repo = deploy.get("repo", "")
+        repo_disp = repo if repo else red("(未配置)")
         ps = pcfg.get("property_sync") or {}
         ps_disp = (
-            ps.get("sheet_name") or ps.get("sheet_id") or "(未配置)"
+            ps.get("sheet_name") or ps.get("sheet_id") or red("(未配置)")
             if ps.get("spreadsheet")
-            else "(未配置)"
+            else red("(未配置)")
         )
 
         print(f"  {name}")
         print(f"    描述:       {desc}")
-        print(f"    最新输入:   {latest_name}")
-        print(f"    解析器:     {parser}")
+        print(f"    最新输入:   {latest_disp}")
+        print(f"    解析器:     {parser_disp}")
         print(f"    飞书子表:   {feishu_sheet_disp}")
         print(f"    Bit顺序:   {bit_order}")
+        print(f"    字节总数:   {byte_disp}")
         print(f"    Property表: {ps_disp}")
-        print(f"    部署仓库:   {repo}")
+        print(f"    部署仓库:   {repo_disp}")
         print()
 
 
@@ -395,16 +436,17 @@ def main():
     os.chdir(_WORKSPACE_ROOT)
 
     parser = argparse.ArgumentParser(
-        description="cfg-word — 整车配置字映射表；parse → sync → validate → property-sync → generate → deploy",
+        description="cfg-word — 整车配置字映射表；parse → sync → snapshot → validate → property-sync → generate → deploy",
         epilog="示例: python main.py n50 / python main.py sync n50 / python main.py -sP n50",
     )
     parser.add_argument(
         "args",
         nargs="*",
-        help="动作 (parse/sync/validate/property-sync/generate/deploy/list/init-mapping/feishu-sheets) 和/或项目名",
+        help="动作 (parse/sync/snapshot/validate/property-sync/generate/deploy/list/init-mapping/feishu-sheets) 和/或项目名",
     )
     parser.add_argument("-p", action="store_true", help="parse: 解析本地 Excel")
     parser.add_argument("-s", action="store_true", help="sync: 同步飞书中间表格")
+    parser.add_argument("-S", action="store_true", help="snapshot: 为飞书中间表格创建版本快照")
     parser.add_argument(
         "-V",
         action="store_true",
@@ -446,6 +488,7 @@ def main():
 
     if args.p: actions.add("parse")
     if args.s: actions.add("sync")
+    if args.S: actions.add("snapshot")
     if args.V: actions.add("validate")
     if args.P: actions.add("property-sync")
     if args.g: actions.add("generate")
@@ -468,6 +511,7 @@ def main():
         actions = {
             "parse",
             "sync",
+            "snapshot",
             "validate",
             "property-sync",
             "generate",

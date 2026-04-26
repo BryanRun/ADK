@@ -1,6 +1,6 @@
 # cfg-word 工具包 使用手册
 
-> **`adk cfg-word`** — 整车配置字映射表的自动解析、飞书同步、校验、代码生成与部署工具，一条命令完成从本地 Excel 到 `cfg_cal.h` 上线的全流程。
+> **`adk cfg-word`** — 整车配置字映射表的自动解析、飞书同步、版本快照、校验、代码生成与部署工具，一条命令完成从本地 Excel 到 `cfg_cal.h` 上线的全流程。
 
 ---
 
@@ -17,7 +17,8 @@
 | 本地 Excel 更新后需**手动对比并更新**飞书中间表 | **sync** 自动差分同步，变更单元格自动高亮 |
 | 手动下载中间表 xlsx，再用**交互式脚本**生成代码 | **一条命令** `adk cfg-word <项目>` 完成全流程 |
 | BYTE/BIT 校验靠人工核算，**容易遗漏** | **validate** 自动校验每个 BYTE 的 bit 之和、字节覆盖完整性 |
-| 多个飞书表格间的数据联动靠**人工复制粘贴** | **property-sync** 自动增量更新 psis.car_cfg 子表 |
+| 飞书表格无版本记录，出错后**无法回溯** | **snapshot** 每次同步后自动创建命名版本快照 |
+| 多个飞书表格间的数据联动靠**人工复制粘贴** | **property-sync** 自动增量更新 psis.car_cfg 子表，并在 changeHistory 记录变更 |
 | 中文配置项到英文宏名的映射**全靠记忆** | **name_mapping.json** 集中管理，`init-mapping` 一键初始化 |
 | 生成的 `cfg_cal.h` 需要**手动拷贝**到目标仓库 | **deploy** 一键部署，含 Git 仓库与分支校验 |
 | 原 vehicleConfigGen++ 工具**交互式操作**，无法自动化 | 核心逻辑已提取重构，全程命令行驱动 |
@@ -28,6 +29,7 @@
 |------|------|
 | Excel 解析 | 支持多种表格版式（ACIC、ICC、Coding DID），可扩展解析器 |
 | 飞书中间表同步 | 自动差分比对，变更单元格高亮标记 |
+| 版本快照 | sync 完成后自动为飞书中间表创建命名版本，便于回溯 |
 | BYTE/BIT 校验 | 自动校验 bit 之和、字节覆盖范围、缺失字节检测 |
 | Property 表同步 | 增量更新飞书 psis.car_cfg 子表（弱依赖，失败不阻断） |
 | 代码生成 | 自动生成 `cfg_cal.h` 头文件 |
@@ -48,8 +50,19 @@
 
 ### 2.2 配置项目
 
-1. 编辑 `tools/tool_cfg_word/config.json`，添加项目配置
-2. 将 Excel 文件放入对应的 `input/` 子目录
+> **安装后文件位置**（通过 `adk cfg-word` 运行时）
+>
+> | 文件 | 路径 |
+> |------|------|
+> | 配置文件 | `~/.config/adk/tool_cfg_word/config.json` |
+> | 输入 Excel | `~/.local/share/adk/tool_cfg_word/input/<厂商>/<项目>/` |
+> | 输出产物 | `~/.local/share/adk/tool_cfg_word/output/<项目>/` |
+> | 名称映射 | `~/.local/share/adk/tool_cfg_word/name_mapping.json` |
+>
+> 首次运行时，`config.json` 和 `name_mapping.json` 会自动从安装包复制到上述位置；**输入目录需要用户自行创建并放入 Excel 文件**。
+
+1. 编辑 `~/.config/adk/tool_cfg_word/config.json`，添加项目配置
+2. 将 Excel 文件放入对应的输入目录（如 `~/.local/share/adk/tool_cfg_word/input/BAIC/n50/`）
 3. 运行 `adk cfg-word <项目> init-mapping` 初始化名称映射
 
 ### 2.3 第一条命令
@@ -79,6 +92,7 @@ start
 partition "强依赖（任一步失败则中止后续）" #E3F0FA {
   :parse\n(本地 Excel → 结构化条目);
   :sync\n(差分同步飞书中间表 + 高亮);
+  :snapshot\n(飞书版本快照);
   :validate\n(BYTE/BIT 与字节覆盖校验);
 }
 
@@ -106,8 +120,9 @@ stop
 |------|---------|------|---------|
 | **parse** | 强依赖 | 读取本地 Excel → 结构化 ConfigItem 列表 | 失败 → 本项目后续全部跳过 |
 | **sync** | 强依赖 | 差分同步到飞书中间表，变更单元格高亮 | 失败 → 本项目后续全部跳过 |
+| **snapshot** | 强依赖 | 为飞书中间表格创建命名版本快照 | 失败 → 本项目后续全部跳过 |
 | **validate** | 强依赖 | BYTE 内 bit 之和为 8；字节覆盖 0~N-1 完整性 | 失败 → 本项目后续全部跳过 |
-| **property-sync** | **弱依赖** | 增量更新飞书 psis.car_cfg 子表 | **失败仅告警**，仍继续 generate 与 deploy |
+| **property-sync** | **弱依赖** | 增量更新飞书 psis.car_cfg 子表；有变更时自动在 changeHistory 子表追加记录 | **失败仅告警**，仍继续 generate 与 deploy |
 | **generate** | 强依赖 | 生成 `output/<项目>/cfg_cal.h` | 失败 → 跳过 deploy |
 | **deploy** | 强依赖 | 拷贝到 `deploy.repo` 的指定分支和路径 | 失败仅影响本步 |
 
@@ -126,6 +141,7 @@ stop
 | `adk cfg-word <项目>` | 对指定项目执行完整流水线 |
 | `adk cfg-word <项目> parse` | 仅解析（等同 `-p`） |
 | `adk cfg-word <项目> sync` | 仅同步飞书中间表（等同 `-s`） |
+| `adk cfg-word <项目> snapshot` | 仅创建飞书版本快照（等同 `-S`） |
 | `adk cfg-word <项目> validate` | 仅校验（等同 `-V`，大写 V） |
 | `adk cfg-word <项目> property-sync` | 仅同步 Property 表（等同 `-P`，大写 P） |
 | `adk cfg-word <项目> generate` | 仅生成代码（等同 `-g`，别名 `gen`） |
@@ -141,7 +157,7 @@ stop
 adk cfg-word n50
 ```
 
-等同于 `adk cfg-word n50 -psVPgd`，按顺序执行 parse → sync → validate → property-sync → generate → deploy。
+等同于 `adk cfg-word n50 -psSVPgd`，按顺序执行 parse → sync → snapshot → validate → property-sync → generate → deploy。
 
 **场景 2：仅解析和校验**
 
@@ -187,7 +203,7 @@ adk cfg-word feishu-sheets
 |------|------|------|
 | `feishu_document` | 推荐 | 飞书多维表格浏览器链接（顶层配置，所有项目共用） |
 | `feishu_sheet_name` | 推荐 | 该项目的中间表子表标签页标题 |
-| `input.dir` | 是 | 输入 Excel 目录路径（相对工具包根目录） |
+| `input.dir` | 是 | 输入 Excel 目录路径（相对工作区目录 `~/.local/share/adk/tool_cfg_word/`） |
 | `input.sheet` | 是 | Excel 内工作表名称（须完全一致） |
 | `input.parser` | 是 | 解析器名（已注册：`n5_baic_acic`、`baic_n80_icc`、`jetour_t1v_coding`） |
 | `bit_order` | 是 | `reverse` 或 `normal`，与生成头文件位序约定一致 |
@@ -275,8 +291,20 @@ cfg-word 工具包需要以下飞书权限：
 | 权限 | 用途 | 必需场景 |
 |------|------|---------|
 | `sheets:spreadsheet` | Sheets API 读写表格数据 | sync / init-mapping / property-sync / feishu-sheets |
+| `drive:drive:version` | Drive API 创建文档版本 | snapshot |
+| `application:application:app_info` | 获取应用信息 | property-sync（changeHistory 记录应用名） |
 
 此外，需将飞书应用添加为**每个目标表格**的协作者，且权限为**可编辑**（sync / property-sync 需要写入）。
+
+**需要配置权限的飞书表格：**
+
+| 表格 | 链接 | 用途 |
+|------|------|------|
+| 配置字中间表 | https://t83dfrspj4.feishu.cn/sheets/NC9GsxyTJhLqU5tPHkOcTnKInFR | sync / init-mapping / feishu-sheets |
+| Property 表（北汽） | https://t83dfrspj4.feishu.cn/sheets/DN95s3UyDhNOOutinLrcyxAKnEf | property-sync（n50 / n80） |
+| Property 表（捷途） | https://t83dfrspj4.feishu.cn/wiki/FKBewbQJiioQZ4kRZbKcSo1enfd | property-sync（t1v） |
+
+用户首次使用前，需在上述每个表格中将飞书应用添加为**可编辑**协作者。
 
 ---
 
@@ -299,7 +327,8 @@ cfg-word 工具包需要以下飞书权限：
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
 | **1.0.0** | 2026/4/9 | 1. 实现本地 Excel 配置字解析（parse），支持多种表格版式解析器（ACIC、ICC、Coding DID） 2. 实现飞书中间表差分同步（sync），变更单元格自动高亮 3. 实现 BYTE/BIT 校验（validate），含 bit 之和、字节覆盖完整性检查 4. 实现 Property 表增量更新（property-sync），弱依赖不阻断后续步骤 5. 实现 `cfg_cal.h` 代码生成（generate）与 Git 仓库部署（deploy） 6. 实现中文→英文宏名映射管理（name_mapping.json + init-mapping） 7. 实现缺失字节自动补全（vehicle_config_byte_count 配置） 8. 多项目支持，独立配置、独立流水线、互不影响 |
+| **1.1.0** | 2026/4/26 | 1. 新增 snapshot 流水线步骤，sync 后自动为飞书中间表创建命名版本快照 2. property-sync 的"通知周期"和"默认值"列改为数字类型写入 3. property-sync 变更后自动在 changeHistory 子表追加记录（日期、应用名、变更摘要） 4. 新增飞书应用名获取（get_app_name） 5. 首次使用体验优化：输入目录/文件缺失时给出明确路径提示 |
 
 ---
 
-**文档版本**：对齐工具包 **v1.0.0**
+**文档版本**：对齐工具包 **v1.1.0**
