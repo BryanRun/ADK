@@ -1,14 +1,17 @@
 """飞书 Property 表 psis.car_cfg 增量同步。
 
-流程：读表 → 按 PSIS属性名（J 列）建索引 → 跳过 reserved → 对比 → 清背景色 → 写入 → 高亮变更。
+流程：读表 → 按 PSIS属性名（J 列）建索引 → 跳过 reserved → 对比 → 清背景色 → 写入 → 高亮变更 → 追加 changeHistory。
 """
 
 from collections import defaultdict
+from datetime import date
 from typing import Any, Dict, List, Tuple
 
 from lib.feishu_api import (
     batch_set_bg_color,
     batch_set_cell_bg_colors,
+    get_app_name,
+    get_sheet_info,
     read_sheet,
     write_sheet,
 )
@@ -39,7 +42,7 @@ def _pad_row(row: list, n: int) -> list:
     return row[:n]
 
 
-def sync_psis_car_cfg(token, spreadsheet, sheet_id, items) -> bool:
+def sync_psis_car_cfg(token, spreadsheet, sheet_id, items, sheet_name="") -> bool:
     """将非 reserved 的 ConfigItem 增量同步到飞书 psis.car_cfg。以 english_name 为键（J 列）。"""
     rows = read_sheet(token, spreadsheet, sheet_id)
     if rows is None:
@@ -108,6 +111,9 @@ def sync_psis_car_cfg(token, spreadsheet, sheet_id, items) -> bool:
         print(yellow("  Property 表无变更"))
         return True
 
+    updated_names = [row[KEY_COL] for _, row in in_place]
+    appended_names = [row[KEY_COL] for row in appends]
+
     print(f"  Property 同步: 更新 {len(in_place)} 行, 追加 {n_append} 行")
 
     last_data_row_0 = len(rows) - 1 + n_append
@@ -137,4 +143,65 @@ def sync_psis_car_cfg(token, spreadsheet, sheet_id, items) -> bool:
         batch_set_cell_bg_colors(token, spreadsheet, sheet_id, changed_cells, "#FFFF00")
 
     print("  Property 表同步完成 ✓")
+
+    if not _append_change_history(
+        token, spreadsheet, sheet_name, updated_names, appended_names
+    ):
+        return False
+
     return True
+
+
+def _append_change_history(
+    token, spreadsheet, sheet_name, updated_names, appended_names
+) -> bool:
+    """在同一 spreadsheet 的 changeHistory 子表追加一条变更记录。"""
+    sheets = get_sheet_info(token, spreadsheet)
+    if not sheets:
+        print(red("  ✘ 无法获取子表列表，changeHistory 写入失败"))
+        return False
+    history_sheet_id = None
+    for sh in sheets:
+        t = sh.get("title") or sh.get("sheet_title") or ""
+        if str(t).strip() == "changeHistory":
+            history_sheet_id = sh.get("sheet_id") or sh.get("id")
+            break
+    if not history_sheet_id:
+        print(red("  ✘ 未找到 changeHistory 子表"))
+        return False
+
+    rows = read_sheet(token, spreadsheet, history_sheet_id)
+    if rows is None:
+        print(red("  ✘ 读取 changeHistory 失败"))
+        return False
+
+    insert_row_1 = 1
+    for i, row in enumerate(rows):
+        b_val = str(row[1]).strip() if len(row) > 1 else ""
+        if b_val:
+            insert_row_1 = i + 2
+            continue
+        break
+    else:
+        insert_row_1 = len(rows) + 1
+
+    parts = []
+    if updated_names:
+        parts.append(f"更新 {', '.join(updated_names)}")
+    if appended_names:
+        parts.append(f"追加 {', '.join(appended_names)}")
+    label = sheet_name or "psis.car_cfg"
+    summary = f"{label}: {'; '.join(parts)}"
+
+    app_name = get_app_name(token)
+    today = date.today().strftime("%Y-%m-%d")
+
+    rng = f"{history_sheet_id}!B{insert_row_1}:D{insert_row_1}"
+    row_data = [today, app_name, summary]
+    if write_sheet(token, spreadsheet, rng, [row_data]):
+        print(f"  changeHistory 已追加: {today} | {summary}")
+        return True
+    else:
+        print(red("  ✘ changeHistory 写入失败"))
+        return False
+

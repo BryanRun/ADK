@@ -25,23 +25,24 @@
 
 | 动作 | 别名 | 说明 |
 |------|------|------|
-| （无动作参数） | — | 默认跑满 **parse → sync → validate → property-sync → generate → deploy**（与下文「端到端默认流水线」一致） |
+| （无动作参数） | — | 默认跑满 **parse → sync → snapshot → validate → property-sync → generate → deploy**（与下文「端到端默认流水线」一致） |
 | `parse` | `-p` | 读本地 Excel → 结构化条目；失败则本项目后续步骤中止 |
 | `sync` | `-s` | 同步到飞书**中间表**（差分与高亮） |
+| `snapshot` | `-S` | 为飞书中间表格创建**命名版本快照** |
 | `validate` | **`-V`（大写）** | BYTE 内 bit 之和为 8；**`vehicle_config_byte_count`** 须覆盖字节 **0 到 N-1**；未配置 N 时本步失败（见配置节） |
 
 ### 同步、生成与辅助动作
 
 | 动作 | 别名 | 说明 |
 |------|------|------|
-| `property-sync` | **`-P`（大写）** | 同步到独立飞书表 **psis.car_cfg**；**弱依赖**，失败仅告警，仍继续 **generate** 与 **deploy** |
+| `property-sync` | **`-P`（大写）** | 同步到独立飞书表 **psis.car_cfg**；有变更时自动在 **changeHistory** 子表追加记录；**弱依赖**，失败仅告警，仍继续 **generate** 与 **deploy** |
 | `generate` | `-g`、`gen` | 生成 **`output/`** + 项目名 + **`/cfg_cal.h`** |
 | `deploy` | `-d` | 拷贝到 **deploy.repo** 与 **deploy.target**；校验 Git 与分支（见 **lib/deploy.py**） |
 | `list` | `-l` | 列出各项目配置与最新输入文件，**不执行**解析或同步 |
 | `init-mapping` | — | 从飞书中间表初始化或更新 **name_mapping.json** |
 | `feishu-sheets` | — | 列出顶层 **feishu_document** 下所有子表标题与 **sheet_id**，便于填写 **feishu_sheet_name** |
 
-**短选项可合并**，例如 `-psV` 表示 `parse` + `sync` + `validate`；`-psVPgd` 与默认全流程等价。
+**短选项可合并**，例如 `-psV` 表示 `parse` + `sync` + `validate`；`-psSVPgd` 与默认全流程等价。
 
 **多项目**：省略项目名时，对 `config.json` 里 **`projects` 的全部键**依次执行；**每个项目单独编排流水线**，某一项目在某步强依赖失败只会跳过**该项目**的后续步骤，其它项目仍会继续。
 
@@ -54,7 +55,7 @@
 
 **版本与校验选项不要混淆**：平台版本用 **`adk -v`**；本工具自身版本用 **`adk cfg-word -v`**（或 `python3 main.py -v` / `--version`）。**校验**动作为 **`-V`（大写 V）**，须写在子命令之后，例如 `adk cfg-word -V n50`。
 
-**端到端默认流水线**（无动作参数，且不是 `list` / `init-mapping` / `feishu-sheets` 时）：`parse` → `sync` → **`validate`** → **`property-sync`（弱依赖，失败不阻断 generate/deploy）** → `generate` → `deploy`。其中 `property-sync` 依赖项目内 **`property_sync`** 且 `spreadsheet` 非空；否则该步跳过（视为成功）。
+**端到端默认流水线**（无动作参数，且不是 `list` / `init-mapping` / `feishu-sheets` 时）：`parse` → `sync` → `snapshot` → **`validate`** → **`property-sync`（弱依赖，失败不阻断 generate/deploy）** → `generate` → `deploy`。其中 `property-sync` 依赖项目内 **`property_sync`** 且 `spreadsheet` 非空；否则该步跳过（视为成功）。
 
 ## 文档与计划
 
@@ -94,10 +95,11 @@
 
 ## 流水线（等价于上图）
 
-强依赖步骤（任一步失败则中止本项目后续步骤）：**parse → sync → validate → generate → deploy**。**property-sync** 为弱依赖：失败仅告警，仍继续 **generate / deploy**。
+强依赖步骤（任一步失败则中止本项目后续步骤）：**parse → sync → snapshot → validate → generate → deploy**。**property-sync** 为弱依赖：失败仅告警，仍继续 **generate / deploy**。
 
 ```
 本地 Excel → [parse] → 结构化数据 → [sync]     → 飞书中间表格（高亮变更）
+                                  → [snapshot] → 飞书版本快照
                                   → [validate] → BYTE/BIT 与总字节数等规则校验
                                   → [property-sync] → 飞书 psis.car_cfg（可选；未配置则跳过）
                                   → [generate] → cfg_cal.h
@@ -119,6 +121,7 @@ start
 partition "强依赖" {
   :parse（本地 Excel 到结构化条目）;
   :sync（飞书中间表）;
+  :snapshot（飞书版本快照）;
   :validate（BYTE、BIT 与 vehicle_config_byte_count）;
 }
 partition "弱依赖" {
@@ -144,7 +147,7 @@ stop
 pip install -r requirements.txt
 ```
 
-需要设置飞书开放平台环境变量（**`sync` / `property-sync` / `init-mapping` / `feishu-sheets`** 等会访问飞书 API 的步骤需要）：
+需要设置飞书开放平台环境变量（**`sync` / `snapshot` / `property-sync` / `init-mapping` / `feishu-sheets`** 等会访问飞书 API 的步骤需要）：
 
 ```bash
 export FEISHU_APP_ID="your_app_id"
@@ -152,6 +155,16 @@ export FEISHU_APP_SECRET="your_app_secret"
 ```
 
 **首次使用**：开放平台建应用、申请权限、以及向各目标飞书表格添加该应用为协作者（**可编辑** / **可管理** 等）的详细说明，见仓库根 [**AutoDriveKit README**](../../README.md) **「飞书自建应用与环境变量（首次使用必读）」**。
+
+**需要配置权限的飞书表格：**
+
+| 表格 | 链接 | 用途 |
+|------|------|------|
+| 配置字中间表 | https://t83dfrspj4.feishu.cn/sheets/NC9GsxyTJhLqU5tPHkOcTnKInFR | sync / init-mapping / feishu-sheets |
+| Property 表（北汽） | https://t83dfrspj4.feishu.cn/sheets/DN95s3UyDhNOOutinLrcyxAKnEf | property-sync（n50 / n80） |
+| Property 表（捷途） | https://t83dfrspj4.feishu.cn/wiki/FKBewbQJiioQZ4kRZbKcSo1enfd | property-sync（t1v） |
+
+用户首次使用前，需在上述每个表格中将飞书应用添加为**可编辑**协作者。
 
 ## 快速开始
 
@@ -164,7 +177,7 @@ adk cfg-word -v
 # 查看所有项目配置（本地最新 Excel、解析器、飞书子表、Property 表、部署路径）
 adk cfg-word list
 
-# 全流程（parse → sync → validate → property-sync → generate → deploy），与仅写项目名等价
+# 全流程（parse → sync → snapshot → validate → property-sync → generate → deploy），与仅写项目名等价
 adk cfg-word n50
 
 # 仅解析（不写飞书、不生成）
@@ -188,7 +201,7 @@ adk cfg-word deploy n50
 
 # 组合（短选项可合并）
 adk cfg-word -psV n50                       # parse + sync + validate
-adk cfg-word -psVPgd n50                    # 满流程（等同默认）
+adk cfg-word -psSVPgd n50                   # 满流程（等同默认）
 adk cfg-word -sg n50                        # parse + sync + generate
 adk cfg-word -sP n50                        # parse + sync + property-sync
 adk cfg-word parse sync validate n50        # 显式长名，与 -psV 等价
@@ -206,6 +219,8 @@ adk cfg-word
 **飞书写入**：`sync`、`init-mapping`、`property-sync` 会调用飞书 API；应用须对目标表格具备**可编辑**（或团队策略允许的更高权限），并与平台 README 中「飞书自建应用与环境变量」一节一致配置 `FEISHU_APP_ID` / `FEISHU_APP_SECRET`。
 
 ## 目录结构
+
+> **通过 `adk cfg-word` 运行时**，用户数据（`input/`、`output/`、`name_mapping.json`）位于 `~/.local/share/adk/tool_cfg_word/` 下，配置文件位于 `~/.config/adk/tool_cfg_word/config.json`。下表为仓库内的源码目录结构：
 
 ```
 tools/tool_cfg_word/
@@ -261,7 +276,7 @@ python3 main.py feishu-sheets
 
 #### `property_sync`（飞书 Property 表 `psis.car_cfg`）
 
-与**中间表格**无关的另一份飞书**多维表格**：按项目配置 `spreadsheet`（浏览器链接，支持 `/sheets/` 与 `/wiki/`）和 `sheet_name`（子表标题，如 `psis.car_cfg`、`psis.car_cfg.n80`）。`property-sync` 步骤会按解析结果**增量更新**对应行（以 **PSIS属性名** 列为键），跳过 `reserved` 行写入；更新前清除数据区背景色，再对变更单元格标黄。
+与**中间表格**无关的另一份飞书**多维表格**：按项目配置 `spreadsheet`（浏览器链接，支持 `/sheets/` 与 `/wiki/`）和 `sheet_name`（子表标题，如 `psis.car_cfg`、`psis.car_cfg.n80`）。`property-sync` 步骤会按解析结果**增量更新**对应行（以 **PSIS属性名** 列为键），跳过 `reserved` 行写入；更新前清除数据区背景色，再对变更单元格标黄。有变更时，自动在同一 spreadsheet 的 **changeHistory** 子表追加一条记录（日期、应用名、变更摘要）。
 
 | 字段 | 含义 |
 |------|------|
@@ -338,7 +353,7 @@ python3 main.py init-mapping n50
 ## 添加新项目
 
 1. 在 `config.json` 中添加项目配置
-2. 将输入 Excel 文件放入对应的 `input/` 子目录
+2. 将输入 Excel 文件放入对应的输入目录（通过 `adk` 运行时为 `~/.local/share/adk/tool_cfg_word/input/<厂商>/<项目>/`）
 3. 如需新的 Excel 格式解析器，在 `lib/parsers/` 下创建并注册
 4. 运行 `init-mapping` 初始化名称映射
 5. 运行全流程测试
