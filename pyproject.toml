@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "autodrivekit"
-version = "1.2.4"
+version = "1.2.5"
 description = "AutoDriveKit（ADK）— 统一工具平台；单一 CLI 入口 adk，聚合车辆工具链（property / cfg-word / vhal-svc 等）"
 requires-python = ">=3.10"
 dependencies = [
