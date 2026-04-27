@@ -232,14 +232,17 @@ def _append_change_history(
         insert_row_1 = len(rows) + 1
 
     parts = []
+    idx = 1
     if updated_names:
-        parts.append(f"更新 {', '.join(updated_names)}")
+        parts.append(f"{idx}. 更新 {', '.join(updated_names)}")
+        idx += 1
     if appended_names:
-        parts.append(f"追加 {', '.join(appended_names)}")
+        parts.append(f"{idx}. 追加 {', '.join(appended_names)}")
+        idx += 1
     if deleted_names:
-        parts.append(f"删除 {', '.join(deleted_names)}")
+        parts.append(f"{idx}. 删除 {', '.join(deleted_names)}")
     label = sheet_name or "psis.car_cfg"
-    summary = f"{label}: {'; '.join(parts)}"
+    summary = f"{label}:\n" + "\n".join(parts)
 
     app_name = get_app_name(token) or "HUALEI AI FLOW"
     today = date.today()

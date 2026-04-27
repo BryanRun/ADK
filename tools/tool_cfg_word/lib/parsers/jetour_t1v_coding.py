@@ -34,12 +34,12 @@ def _clean_name(s):
 
 
 def _is_reserved_cn_en(cn, en):
-    c, e = _clean_name(cn), _clean_name(en)
-    if not c and not e:
+    e = _clean_name(en)
+    if not e:
         return True
-    if _NOT_USED.search(c) or _NOT_USED.search(e):
+    if _NOT_USED.search(e):
         return True
-    if c in ("预留", "/") or e.lower() in ("reserved",):
+    if e.lower() in ("reserved",):
         return True
     return False
 
