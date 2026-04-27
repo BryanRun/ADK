@@ -304,24 +304,22 @@ CFGWORD_NODE = "Ep7hweak8ivB06kH1kyclNpinVf"
 ADK_NODE = "XpMxwP6iZi0T1fkW4P7cRFp7nXe"
 
 CFGWORD_REPLACEMENTS: list[tuple[str, str]] = [
-    ("对齐工具包 v1.3.0", "对齐工具包 v1.3.1"),
+    ("对齐工具包 v1.3.1", "对齐工具包 v1.3.2"),
 ]
 
 ADK_REPLACEMENTS: list[tuple[str, str]] = [
-    ("对齐平台 1.2.7", "对齐平台 1.2.8"),
+    ("对齐平台 1.2.8", "对齐平台 1.2.9"),
 ]
 
 # 版本条目（从旧到新；插入时 oldest-first 使 newest 留在表格最上方）
 CFGWORD_VERSIONS: list[tuple[str, str, str]] = [
-    ("1.3.1", "2026/4/27",
-     '1. t1v reserved 判定改为仅看英文名（去除中文名"预留""/"判定，以英文名为唯一依据）\n'
-     "2. property-sync changeHistory 变更摘要改为有序列表换行"),
+    ("1.3.2", "2026/4/27",
+     't1v reserved 判定增加兜底：英文名经标准化（去除非字母数字字符）后为空也判定为 reserved，修复"/"未被识别为 reserved 的问题'),
 ]
 
 ADK_VERSIONS: list[tuple[str, str, str]] = [
-    ("1.2.8", "2026/4/27",
-     '1. cfg-word 升至 v1.3.1：t1v reserved 判定改为仅看英文名（去除中文名"预留""/"判定）\n'
-     "2. property-sync changeHistory 变更摘要改为有序列表换行"),
+    ("1.2.9", "2026/4/27",
+     'cfg-word 升至 v1.3.2：t1v reserved 判定增加兜底——英文名标准化后为空（如"/"）也判定为 reserved'),
 ]
 
 
