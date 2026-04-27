@@ -304,72 +304,22 @@ CFGWORD_NODE = "Ep7hweak8ivB06kH1kyclNpinVf"
 ADK_NODE = "XpMxwP6iZi0T1fkW4P7cRFp7nXe"
 
 CFGWORD_REPLACEMENTS: list[tuple[str, str]] = [
-    ("Property 表增量更新、",
-     "Property 表全量覆盖写入、"),
-    ("自动增量更新 psis.car_cfg 子表，并在 changeHistory 记录变更",
-     "自动全量覆盖写入 psis.car_cfg 子表（行序与中间表一致），并在 changeHistory 记录变更"),
-    ("自动校验 bit 之和、字节覆盖范围、缺失字节检测",
-     "自动校验 bit 之和、字节覆盖范围、缺失字节检测、英文宏名唯一性"),
-    ("增量更新飞书 psis.car_cfg 子表（弱依赖，失败不阻断）",
-     "全量覆盖写入飞书 psis.car_cfg 子表，行序与中间表一致，自动清理孤立行（弱依赖，失败不阻断）"),
-    ("飞书 psis.car_cfg 增量更新",
-     "飞书 psis.car_cfg 全量覆盖写入"),
-    ("BYTE 内 bit 之和为 8；字节覆盖 0~N-1 完整性",
-     "BYTE 内 bit 之和为 8；字节覆盖 0~N-1 完整性；英文宏名唯一性"),
-    ("增量更新飞书 psis.car_cfg 子表；有变更时自动在 changeHistory 子表追加记录",
-     "全量覆盖写入飞书 psis.car_cfg 子表（行序与中间表一致，自动清理孤立行）；有变更时自动在 changeHistory 子表追加记录"),
+    ("对齐工具包 v1.3.1", "对齐工具包 v1.3.2"),
 ]
 
 ADK_REPLACEMENTS: list[tuple[str, str]] = [
-    ("parse → sync → validate → property-sync → generate → deploy",
-     "parse → sync → snapshot → validate → property-sync → generate → deploy"),
-    ("增量更新飞书 psis.car_cfg 子表",
-     "全量覆盖写入飞书 psis.car_cfg 子表"),
-    ("字节覆盖完整性）",
-     "字节覆盖完整性、宏名唯一性）"),
-    ("Property 表增量更新、",
-     "Property 表全量覆盖写入（行序与中间表一致、自动清理孤立行）、"),
-    ("中文→英文宏名映射",
-     "解析器直接提取英文宏名并标准化"),
+    ("对齐平台 1.2.8", "对齐平台 1.2.9"),
 ]
 
 # 版本条目（从旧到新；插入时 oldest-first 使 newest 留在表格最上方）
 CFGWORD_VERSIONS: list[tuple[str, str, str]] = [
-    ("1.2.0", "2026/4/26",
-     "1. parse 阶段缺少映射时自动从飞书拉取，无需手动 init-mapping\n"
-     "2. 修复 Excel 换行符导致配置项名称与映射表不匹配（中英文间换行→空格归一化）\n"
-     "3. 修复飞书同步清背景色时行范围超出网格限制\n"
-     "4. property-sync changeHistory 子表名匹配改为忽略大小写\n"
-     "5. property-sync changeHistory 日期列改为日期格式写入、变更单元格自动高亮\n"
-     "6. 获取飞书应用名失败降级为提示，不阻断 property-sync"),
-    ("1.3.0", "2026/4/27",
-     "1. t1v 解析器重构：去除 MAX_VEHICLE_BYTE 截断，全量解析 Excel 配置项\n"
-     "2. 解析器直接从 Excel EN 列提取英文宏名并标准化（大写、下划线替换、数字开头加 N_ 前缀、"
-     "VEHICLE_TYPE 自动追加 _MODE）\n"
-     "3. 支持 - 分隔的字节和位范围（如 79-87、0-7）\n"
-     "4. E 列改为 col 9 + col 13（值描述）换行拼接，值描述改为从 col 13 获取\n"
-     "5. property-sync 改为全量覆盖写入，行序与中间表格一致，自动清理孤立行\n"
-     "6. property-sync 宏名从中间表格 D 列获取，确保两表宏名一致\n"
-     "7. validate 新增英文宏名唯一性校验\n"
-     "8. 飞书设置背景色改为分批请求（每批 100 个 range），避免大量单元格时超时\n"
-     "9. changeHistory D 列自动换行"),
+    ("1.3.2", "2026/4/27",
+     't1v reserved 判定增加兜底：英文名经标准化（去除非字母数字字符）后为空也判定为 reserved，修复"/"未被识别为 reserved 的问题'),
 ]
 
 ADK_VERSIONS: list[tuple[str, str, str]] = [
-    ("1.2.6", "2026/4/26",
-     "1. cfg-word 升至 v1.2.0：parse 阶段缺少映射时自动从飞书拉取\n"
-     "2. 修复 Excel 换行符导致配置项名称与映射表不匹配\n"
-     "3. 修复飞书同步清背景色行范围超出网格限制\n"
-     "4. property-sync changeHistory 子表名匹配忽略大小写、日期列改为日期格式写入、变更单元格高亮\n"
-     "5. 获取飞书应用名失败降级为提示"),
-    ("1.2.7", "2026/4/27",
-     "1. cfg-word 升至 v1.3.0：t1v 解析器重构——去除 MAX_VEHICLE_BYTE 截断、"
-     "解析器直接提取英文宏名并标准化（大写/下划线/数字前缀）、支持 - 分隔的字节和位范围、"
-     "值描述改为 col 13、E 列改为 col 9 + col 13 拼接\n"
-     "2. property-sync 改为全量覆盖写入（行序与中间表一致、自动清理孤立行）；"
-     "宏名从中间表 D 列获取确保两表一致\n"
-     "3. validate 新增宏名唯一性校验\n"
-     "4. 飞书设置背景色改为分批请求避免超时"),
+    ("1.2.9", "2026/4/27",
+     'cfg-word 升至 v1.3.2：t1v reserved 判定增加兜底——英文名标准化后为空（如"/"）也判定为 reserved'),
 ]
 
 

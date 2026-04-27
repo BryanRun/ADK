@@ -1,6 +1,6 @@
 # AutoDriveKit
 
-![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-green) ![Version](https://img.shields.io/badge/Version-1.2.7-orange)
+![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-green) ![Version](https://img.shields.io/badge/Version-1.2.9-orange)
 
 **AutoDriveKit**（简称 **ADK**）是**统一工具平台**：为车辆相关代码生成与配置同步提供**单一 CLI 入口** `adk`。每个工具以**独立工具包**形式放在固定目录下，通过清单注册后即可被 `adk` 识别，实现「即插即用」。
 
@@ -417,6 +417,8 @@ $env:FEISHU_APP_SECRET="你的AppSecret"
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
+| **1.2.9** | 2026/4/27 | **cfg-word** 升至 v1.3.2：t1v reserved 判定增加兜底——英文名标准化后为空（如"/"）也判定为 reserved |
+| **1.2.8** | 2026/4/27 | 1. **cfg-word** 升至 v1.3.1：t1v reserved 判定改为仅看英文名（去除中文名"预留""/"判定）<br>2. property-sync changeHistory 变更摘要改为有序列表换行 |
 | **1.2.7** | 2026/4/27 | 1. **cfg-word** 升至 v1.3.0：t1v 解析器重构——去除 MAX_VEHICLE_BYTE 截断、解析器直接提取英文宏名并标准化（大写/下划线/数字前缀）、支持 `-` 分隔的字节和位范围、值描述改为 col 13、E 列改为 col 9 + col 13 拼接<br>2. property-sync 改为全量覆盖写入（行序与中间表一致、自动清理孤立行）；宏名从中间表 D 列获取确保两表一致<br>3. validate 新增宏名唯一性校验<br>4. 飞书设置背景色改为分批请求避免超时 |
 | **1.2.6** | 2026/4/26 | 1. **cfg-word** 升至 v1.2.0：parse 阶段缺少映射时自动从飞书拉取<br>2. 修复 Excel 换行符导致配置项名称与映射表不匹配<br>3. 修复飞书同步清背景色行范围超出网格限制<br>4. property-sync changeHistory 子表名匹配忽略大小写、日期列改为日期格式写入、变更单元格高亮<br>5. 获取飞书应用名失败降级为提示 |
 | **1.2.5** | 2026/4/26 | 1. **cfg-word** 升至 v1.1.0：新增 snapshot 流水线步骤（sync 后自动创建飞书版本快照）；property-sync 的"通知周期"和"默认值"列改为数字类型写入；property-sync 变更后自动在 changeHistory 子表追加记录<br>2. 修复 `__version__` 硬编码导致 `adk update` 后版本号不更新，改为自动从 `pyproject.toml` 读取 |
