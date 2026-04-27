@@ -117,7 +117,7 @@ adk [通用选项] <工具包> <项目> [动作]...
 
 ```bash
 adk property <项目>        # 执行 property 完整流水线（scan → fetch → generate → deploy → snapshot）
-adk cfg-word <项目>        # 执行 cfg-word 完整流水线（parse → sync → validate → property-sync → generate → deploy）
+adk cfg-word <项目>        # 执行 cfg-word 完整流水线（parse → sync → snapshot → validate → property-sync → generate → deploy）
 adk vhal-svc <项目>        # 执行 vhal-svc 完整流水线（fetch → generate → deploy → compile）
 ```
 
@@ -186,7 +186,7 @@ $env:FEISHU_APP_SECRET="你的AppSecret"
 | 工具包 | 解决的核心痛点 | 一句话能力 | 完整流水线 |
 |--------|---------------|-----------|-----------|
 | **property** | 飞书表格拉取、代码生成、部署到 Git 全程手动 | 一条命令完成从在线表格到 Git 仓库的全自动代码生成 | scan → fetch → generate → deploy → snapshot |
-| **cfg-word** | 配置字映射表维护分散、校验困难、多表联动靠人工 | 自动解析 Excel、飞书同步、BYTE/BIT 校验、生成 cfg_cal.h 并部署 | parse → sync → validate → property-sync → generate → deploy |
+| **cfg-word** | 配置字映射表维护分散、校验困难、多表联动靠人工 | 自动解析 Excel、飞书同步、BYTE/BIT 校验、生成 cfg_cal.h 并部署 | parse → sync → snapshot → validate → property-sync → generate → deploy |
 | **vhal-svc** | VHAL 矩阵表驱动的生成-部署-编译流程繁琐易断 | 基于飞书矩阵表自动生成 VehicleService 侧产物并部署编译 | fetch → generate → deploy → compile |
 
 #### property — 车辆属性代码生成
@@ -195,7 +195,7 @@ $env:FEISHU_APP_SECRET="你的AppSecret"
 
 #### cfg-word — 整车配置字映射表管理
 
-面向整车配置字（Vehicle Config）的全生命周期管理。从本地 Excel 配置字源表出发，自动完成结构化解析、飞书中间表差分同步（变更高亮）、BYTE/BIT 校验（bit 之和、字节覆盖完整性）、Property 表增量更新、`cfg_cal.h` 代码生成与 Git 仓库部署。支持**多种表格版式解析器**（ACIC、ICC、Coding DID）、**中文→英文宏名映射**管理和**缺失字节自动补全**。
+面向整车配置字（Vehicle Config）的全生命周期管理。从本地 Excel 配置字源表出发，自动完成结构化解析、飞书中间表差分同步（变更高亮）、BYTE/BIT 校验（bit 之和、字节覆盖完整性、宏名唯一性）、Property 表全量覆盖写入（行序与中间表一致、自动清理孤立行）、`cfg_cal.h` 代码生成与 Git 仓库部署。支持**多种表格版式解析器**（ACIC、ICC、Coding DID）、**解析器直接提取英文宏名并标准化**和**缺失字节自动补全**。
 
 #### vhal-svc — VHAL 矩阵表生成与部署
 
@@ -266,13 +266,16 @@ adk doctor
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
-| **1.2.3** | 2026/4/24 | 1. `adk -h` help 页面修复：`--help` 文案改为中文、交互面板引用修正、补充 `doctor` 命令说明 2. **property** 升至 v1.2.1：修复 `fetch_project` 函数定义缺失导致 scan 后 fetch 报错 3. `adk update` 后自动将入口指向 managed install，无需手动创建符号链接 |
+| **1.2.7** | 2026/4/27 | 1. **cfg-word** 升至 v1.3.0：t1v 解析器重构——去除 MAX_VEHICLE_BYTE 截断、解析器直接提取英文宏名并标准化（大写/下划线/数字前缀）、支持 `-` 分隔的字节和位范围、值描述改为 col 13、E 列改为 col 9 + col 13 拼接<br>2. property-sync 改为全量覆盖写入（行序与中间表一致、自动清理孤立行）；宏名从中间表 D 列获取确保两表一致<br>3. validate 新增宏名唯一性校验<br>4. 飞书设置背景色改为分批请求避免超时 |
+| **1.2.6** | 2026/4/26 | 1. **cfg-word** 升至 v1.2.0：parse 阶段缺少映射时自动从飞书拉取<br>2. 修复 Excel 换行符导致配置项名称与映射表不匹配<br>3. 修复飞书同步清背景色行范围超出网格限制<br>4. property-sync changeHistory 子表名匹配忽略大小写、日期列改为日期格式写入、变更单元格高亮<br>5. 获取飞书应用名失败降级为提示 |
+| **1.2.5** | 2026/4/26 | 1. **cfg-word** 升至 v1.1.0：新增 snapshot 流水线步骤（sync 后自动创建飞书版本快照）；property-sync 的"通知周期"和"默认值"列改为数字类型写入；property-sync 变更后自动在 changeHistory 子表追加记录<br>2. 修复 `__version__` 硬编码导致 `adk update` 后版本号不更新，改为自动从 `pyproject.toml` 读取 |
+| **1.2.3** | 2026/4/24 | 1. `adk -h` help 页面修复：`--help` 文案改为中文、交互面板引用修正、补充 `doctor` 命令说明<br>2. **property** 升至 v1.2.1：修复 `fetch_project` 函数定义缺失导致 scan 后 fetch 报错<br>3. `adk update` 后自动将入口指向 managed install，无需手动创建符号链接 |
 | **1.2.2** | 2026/4/22 | 1. sha256 校验改为源码文件树级别，兼容飞书 wiki 文件节点对上传文件的 gzip/tar/xlsx 改写 |
-| **1.2.1** | 2026/4/22 | 1. 修复飞书 CDN 对下载文件额外包裹 gzip 导致 `adk update` sha256 校验失败 2. 发布产物目录从外部目录改为仓库内 `release/` 3. 打包时自动清理 `release/` 下的旧版本产物 |
-| **1.2.0** | 2026/4/22 | 1. **property** 新增 `scan` 在线差异扫描命令（飞书与本地逐单元格对比、增/删/改颜色高亮） 2. **property** `snapshot` 独立为单独命令，流水线扩展为 scan → fetch → generate → deploy → snapshot 五步 3. 修复飞书 CDN 返回 gzip 压缩 manifest 时的解码异常 |
-| **1.1.0** | 2026/4/16 | 1. 新增 `adk update` 版本检测与在线自动更新能力 2. 用户配置文件与程序文件解耦，升级不影响用户配置 3. 新增 `adk doctor` 环境体检命令 4. 新增快速打包、发版能力 |
-| **1.0.0** | 2026/4/15 | 1. 优化平台交互体验 2. 新增 **vhal-svc** 工具包（VHAL 矩阵表驱动的生成-部署-编译流水线） |
-| **0.3.0** | 2026/4/9 | 1. 平台与 **property** / **cfg-word** 工具包能力基线 2. 统一 CLI 入口与交互式菜单框架 |
+| **1.2.1** | 2026/4/22 | 1. 修复飞书 CDN 对下载文件额外包裹 gzip 导致 `adk update` sha256 校验失败<br>2. 发布产物目录从外部目录改为仓库内 `release/`<br>3. 打包时自动清理 `release/` 下的旧版本产物 |
+| **1.2.0** | 2026/4/22 | 1. **property** 新增 `scan` 在线差异扫描命令（飞书与本地逐单元格对比、增/删/改颜色高亮）<br>2. **property** `snapshot` 独立为单独命令，流水线扩展为 scan → fetch → generate → deploy → snapshot 五步<br>3. 修复飞书 CDN 返回 gzip 压缩 manifest 时的解码异常 |
+| **1.1.0** | 2026/4/16 | 1. 新增 `adk update` 版本检测与在线自动更新能力<br>2. 用户配置文件与程序文件解耦，升级不影响用户配置<br>3. 新增 `adk doctor` 环境体检命令<br>4. 新增快速打包、发版能力 |
+| **1.0.0** | 2026/4/15 | 1. 优化平台交互体验<br>2. 新增 **vhal-svc** 工具包（VHAL 矩阵表驱动的生成-部署-编译流水线） |
+| **0.3.0** | 2026/4/9 | 1. 平台与 **property** / **cfg-word** 工具包能力基线<br>2. 统一 CLI 入口与交互式菜单框架 |
 | **0.2.0** | 2026/4/7 | 1. 完成平台框架搭建（工具发现、参数透传、注册清单机制） |
 | **0.1.0** | 2026/4/1 | 1. 实现 **property** 工具包（飞书表格下载、Excel 解析、C/C++ 代码生成、Git 仓库部署） |
 
@@ -331,11 +334,11 @@ adk doctor
 | `adk cfg-word --help` | 查看 cfg-word 工具帮助 |
 | `adk cfg-word list` | 查看所有项目配置 |
 | `adk cfg-word feishu-sheets` | 列出飞书文档下所有子表标题与 sheet_id |
-| `adk cfg-word <项目>` | 对指定项目执行完整流水线（parse → sync → validate → property-sync → generate → deploy） |
+| `adk cfg-word <项目>` | 对指定项目执行完整流水线（parse → sync → snapshot → validate → property-sync → generate → deploy） |
 | `adk cfg-word <项目> parse` | 读取本地 Excel，解析为结构化配置条目 |
 | `adk cfg-word <项目> sync` | 差分同步到飞书中间表，变更单元格自动高亮 |
 | `adk cfg-word <项目> validate` | BYTE/BIT 校验：bit 之和、字节覆盖完整性检查 |
-| `adk cfg-word <项目> property-sync` | 增量更新飞书 psis.car_cfg 子表 |
+| `adk cfg-word <项目> property-sync` | 全量覆盖写入飞书 psis.car_cfg 子表 |
 | `adk cfg-word <项目> generate` | 生成 cfg_cal.h 头文件 |
 | `adk cfg-word <项目> deploy` | 将 cfg_cal.h 拷贝到目标 Git 仓库 |
 | `adk cfg-word <项目> init-mapping` | 从飞书中间表初始化名称映射 |
@@ -354,4 +357,4 @@ adk doctor
 
 ---
 
-**文档版本**：对齐平台 **1.2.3**
+**文档版本**：对齐平台 **1.2.7**

@@ -8,7 +8,7 @@
 
 ### 1.1 工具是什么
 
-**cfg-word** 是 ADK 平台的核心工具包之一，专注于**整车配置字**（Vehicle Config）的自动化管理。它从本地 Excel 配置字源表出发，自动完成解析、飞书中间表同步、BYTE/BIT 校验、Property 表增量更新、`cfg_cal.h` 代码生成与 Git 仓库部署——取代原有的手动对比、手动下载、交互式脚本等繁琐操作。
+**cfg-word** 是 ADK 平台的核心工具包之一，专注于**整车配置字**（Vehicle Config）的自动化管理。它从本地 Excel 配置字源表出发，自动完成解析、飞书中间表同步、BYTE/BIT 校验、Property 表全量覆盖写入、`cfg_cal.h` 代码生成与 Git 仓库部署——取代原有的手动对比、手动下载、交互式脚本等繁琐操作。
 
 ### 1.2 痛点与价值
 
@@ -18,10 +18,10 @@
 | 手动下载中间表 xlsx，再用**交互式脚本**生成代码 | **一条命令** `adk cfg-word <项目>` 完成全流程 |
 | BYTE/BIT 校验靠人工核算，**容易遗漏** | **validate** 自动校验每个 BYTE 的 bit 之和、字节覆盖完整性 |
 | 飞书表格无版本记录，出错后**无法回溯** | **snapshot** 每次同步后自动创建命名版本快照 |
-| 多个飞书表格间的数据联动靠**人工复制粘贴** | **property-sync** 自动增量更新 psis.car_cfg 子表，并在 changeHistory 记录变更 |
+| 多个飞书表格间的数据联动靠**人工复制粘贴** | **property-sync** 自动全量覆盖写入 psis.car_cfg 子表（行序与中间表一致），并在 changeHistory 记录变更 |
 | 中文配置项到英文宏名的映射**全靠记忆** | **name_mapping.json** 集中管理，`init-mapping` 一键初始化 |
 | 生成的 `cfg_cal.h` 需要**手动拷贝**到目标仓库 | **deploy** 一键部署，含 Git 仓库与分支校验 |
-| 原 vehicleConfigGen++ 工具**交互式操作**，无法自动化 | 核心逻辑已提取重构，全程命令行驱动 |
+| 原工具**交互式操作**，无法自动化 | 核心逻辑已提取重构，全程命令行驱动 |
 
 ### 1.3 核心能力一览
 
@@ -30,8 +30,8 @@
 | Excel 解析 | 支持多种表格版式（ACIC、ICC、Coding DID），可扩展解析器 |
 | 飞书中间表同步 | 自动差分比对，变更单元格高亮标记 |
 | 版本快照 | sync 完成后自动为飞书中间表创建命名版本，便于回溯 |
-| BYTE/BIT 校验 | 自动校验 bit 之和、字节覆盖范围、缺失字节检测 |
-| Property 表同步 | 增量更新飞书 psis.car_cfg 子表（弱依赖，失败不阻断） |
+| BYTE/BIT 校验 | 自动校验 bit 之和、字节覆盖范围、缺失字节检测、英文宏名唯一性 |
+| Property 表同步 | 全量覆盖写入飞书 psis.car_cfg 子表，行序与中间表一致，自动清理孤立行（弱依赖，失败不阻断） |
 | 代码生成 | 自动生成 `cfg_cal.h` 头文件 |
 | 一键部署 | 生成后自动拷贝到目标 Git 仓库 |
 | 名称映射管理 | 中文→英文宏名集中管理，支持从飞书初始化 |
@@ -97,7 +97,7 @@ partition "强依赖（任一步失败则中止后续）" #E3F0FA {
 }
 
 partition "弱依赖" #FFF9C4 {
-  :property-sync\n(飞书 psis.car_cfg 增量更新);
+  :property-sync\n(飞书 psis.car_cfg 全量覆盖写入);
   note right
     失败仅告警，不阻断后续步骤；
     未配置 property_sync 则跳过
@@ -121,8 +121,8 @@ stop
 | **parse** | 强依赖 | 读取本地 Excel → 结构化 ConfigItem 列表 | 失败 → 本项目后续全部跳过 |
 | **sync** | 强依赖 | 差分同步到飞书中间表，变更单元格高亮 | 失败 → 本项目后续全部跳过 |
 | **snapshot** | 强依赖 | 为飞书中间表格创建命名版本快照 | 失败 → 本项目后续全部跳过 |
-| **validate** | 强依赖 | BYTE 内 bit 之和为 8；字节覆盖 0~N-1 完整性 | 失败 → 本项目后续全部跳过 |
-| **property-sync** | **弱依赖** | 增量更新飞书 psis.car_cfg 子表；有变更时自动在 changeHistory 子表追加记录 | **失败仅告警**，仍继续 generate 与 deploy |
+| **validate** | 强依赖 | BYTE 内 bit 之和为 8；字节覆盖 0~N-1 完整性；英文宏名唯一性 | 失败 → 本项目后续全部跳过 |
+| **property-sync** | **弱依赖** | 全量覆盖写入飞书 psis.car_cfg 子表（行序与中间表一致，自动清理孤立行）；有变更时自动在 changeHistory 子表追加记录 | **失败仅告警**，仍继续 generate 与 deploy |
 | **generate** | 强依赖 | 生成 `output/<项目>/cfg_cal.h` | 失败 → 跳过 deploy |
 | **deploy** | 强依赖 | 拷贝到 `deploy.repo` 的指定分支和路径 | 失败仅影响本步 |
 
@@ -326,9 +326,11 @@ cfg-word 工具包需要以下飞书权限：
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
-| **1.0.0** | 2026/4/9 | 1. 实现本地 Excel 配置字解析（parse），支持多种表格版式解析器（ACIC、ICC、Coding DID） 2. 实现飞书中间表差分同步（sync），变更单元格自动高亮 3. 实现 BYTE/BIT 校验（validate），含 bit 之和、字节覆盖完整性检查 4. 实现 Property 表增量更新（property-sync），弱依赖不阻断后续步骤 5. 实现 `cfg_cal.h` 代码生成（generate）与 Git 仓库部署（deploy） 6. 实现中文→英文宏名映射管理（name_mapping.json + init-mapping） 7. 实现缺失字节自动补全（vehicle_config_byte_count 配置） 8. 多项目支持，独立配置、独立流水线、互不影响 |
-| **1.1.0** | 2026/4/26 | 1. 新增 snapshot 流水线步骤，sync 后自动为飞书中间表创建命名版本快照 2. property-sync 的"通知周期"和"默认值"列改为数字类型写入 3. property-sync 变更后自动在 changeHistory 子表追加记录（日期、应用名、变更摘要） 4. 新增飞书应用名获取（get_app_name） 5. 首次使用体验优化：输入目录/文件缺失时给出明确路径提示 |
+| **1.3.0** | 2026/4/27 | 1. t1v 解析器重构：去除 MAX_VEHICLE_BYTE 截断，全量解析 Excel 配置项<br>2. 解析器直接从 Excel EN 列提取英文宏名并标准化（大写、下划线替换、数字开头加 N\_ 前缀、VEHICLE\_TYPE 自动追加 \_MODE）<br>3. 支持 `-` 分隔的字节和位范围（如 79-87、0-7）<br>4. E 列改为 col 9 + col 13（值描述）换行拼接，值描述改为从 col 13 获取<br>5. property-sync 改为全量覆盖写入，行序与中间表格一致，自动清理孤立行<br>6. property-sync 宏名从中间表格 D 列获取，确保两表宏名一致<br>7. validate 新增英文宏名唯一性校验<br>8. 飞书设置背景色改为分批请求（每批 100 个 range），避免大量单元格时超时<br>9. changeHistory D 列自动换行 |
+| **1.2.0** | 2026/4/26 | 1. parse 阶段缺少映射时自动从飞书拉取，无需手动 init-mapping<br>2. 修复 Excel 换行符导致配置项名称与映射表不匹配（中英文间换行→空格归一化）<br>3. 修复飞书同步清背景色时行范围超出网格限制<br>4. property-sync changeHistory 子表名匹配改为忽略大小写<br>5. property-sync changeHistory 日期列改为日期格式写入、变更单元格自动高亮<br>6. 获取飞书应用名失败降级为提示，不阻断 property-sync |
+| **1.1.0** | 2026/4/26 | 1. 新增 snapshot 流水线步骤，sync 后自动为飞书中间表创建命名版本快照<br>2. property-sync 的"通知周期"和"默认值"列改为数字类型写入<br>3. property-sync 变更后自动在 changeHistory 子表追加记录（日期、应用名、变更摘要）<br>4. 新增飞书应用名获取（get_app_name）<br>5. 首次使用体验优化：输入目录/文件缺失时给出明确路径提示 |
+| **1.0.0** | 2026/4/9 | 1. 实现本地 Excel 配置字解析（parse），支持多种表格版式解析器（ACIC、ICC、Coding DID）<br>2. 实现飞书中间表差分同步（sync），变更单元格自动高亮<br>3. 实现 BYTE/BIT 校验（validate），含 bit 之和、字节覆盖完整性检查<br>4. 实现 Property 表增量更新（property-sync），弱依赖不阻断后续步骤<br>5. 实现 `cfg_cal.h` 代码生成（generate）与 Git 仓库部署（deploy）<br>6. 实现中文→英文宏名映射管理（name_mapping.json + init-mapping）<br>7. 实现缺失字节自动补全（vehicle_config_byte_count 配置）<br>8. 多项目支持，独立配置、独立流水线、互不影响 |
 
 ---
 
-**文档版本**：对齐工具包 **v1.1.0**
+**文档版本**：对齐工具包 **v1.3.0**

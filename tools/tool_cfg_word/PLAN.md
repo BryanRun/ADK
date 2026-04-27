@@ -7,7 +7,7 @@
 ```mermaid
 flowchart LR
     A["本地 Excel\n(配置字源表)"] -->|手动对比+更新| B["飞书中间表格\nNC9G..."]
-    B -->|手动下载xlsx| C["vehicleConfigGen++\n(交互式)"]
+    B -->|手动下载xlsx| C["旧工具\n(交互式)"]
     C -->|生成 cfg_cal.h| D["output/"]
     D -->|手动拷贝| E["目标 Git 仓库"]
 ```
@@ -54,7 +54,7 @@ tools/tool_cfg_word/
 2. **name_mapping.json**：按项目分区，中文描述 → 英文宏名；可从飞书 `init-mapping` 初始化。
 3. **解析器**：`lib/parsers/` 中注册，`parser` 字段按名称选择。
 4. **飞书 sync**：读旧数据 → 对比 → 清非表头背景色 → 写新数据 → 差异单元格黄色。
-5. **代码生成**：`lib/codegen.py` 内存数据生成 `cfg_cal.h`，等价于原 `vehicleConfigGen++.py` 中生成逻辑的重构。
+5. **代码生成**：`lib/codegen.py` 内存数据生成 `cfg_cal.h`。
 6. **部署**：校验仓库、切换分支、拷贝文件，不自动 commit。
 
 ## 实现要点

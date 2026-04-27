@@ -24,7 +24,7 @@ def _clean_name(raw_name):
     for suffix in ("\nreserved", "\nresversed"):
         if name.lower().endswith(suffix):
             name = name[: len(name) - len(suffix)]
-    return name.replace("\n", "").strip()
+    return " ".join(name.replace("\n", " ").split())
 
 
 def _is_reserved(raw_name):

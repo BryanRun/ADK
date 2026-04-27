@@ -94,8 +94,8 @@ def sync_to_feishu(token, spreadsheet, sheet_id, project_name, items, project_co
         return True
     print(f"  检测到 {n_changed} 个单元格变化 (涉及 {n_rows_changed} 行)")
 
-    # 5. Clear background on data rows — 列范围不得超过飞书子表 grid 列数，否则报 col range invalid
-    clear_end = max(len(old_data), len(new_rows)) + 1  # +1 for header offset
+    # 5. Clear background on existing data rows only — new rows don't exist in the grid yet
+    clear_end = len(old_data) + 1  # +1 for header offset; only existing rows
     last_sheet_row = clear_end  # 1-based last row number to touch
     grid_n = get_sheet_grid_column_count(token, spreadsheet, sheet_id)
     if grid_n is not None:

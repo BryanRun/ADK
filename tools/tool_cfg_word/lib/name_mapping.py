@@ -68,6 +68,8 @@ def apply_mapping(items, mapping):
         if item.is_reserved or not item.chinese_name:
             item.english_name = f"RESERVED_{reserved_counter}"
             reserved_counter += 1
+        elif item.english_name:
+            pass
         else:
             eng = mapping.get(item.chinese_name)
             if eng:
@@ -107,7 +109,7 @@ def init_mapping_from_feishu(project_name, spreadsheet, sheet_id):
         if eng_name.startswith("RESERVED"):
             continue
 
-        chn_name = chn_name.strip()
+        chn_name = " ".join(chn_name.replace("\r\n", " ").replace("\n", " ").split())
         eng_name = eng_name.strip()
 
         if chn_name and chn_name not in project_mapping:
@@ -118,4 +120,4 @@ def init_mapping_from_feishu(project_name, spreadsheet, sheet_id):
     _save_all(all_data)
     total = len(project_mapping)
     print(f"  完成: {project_name} 共 {total} 条映射 (新增 {count_new} 条)")
-    print(f"  保存至: {MAPPING_FILE}")
+    print(f"  保存至: {mapping_file_path()}")

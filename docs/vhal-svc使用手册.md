@@ -262,7 +262,7 @@ vhal-svc 工具包需要以下飞书权限：
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
-| **0.3.4** | 2026/4/15 | 1. 实现飞书 VHAL 矩阵表自动下载（fetch，含 Drive Export 降级方案） 2. 实现 VehicleGenerateTool 生成引擎集成（generate，含输出抑制与冗余模式） 3. 实现多文件部署到 Git 仓库（deploy，支持一源多目标与 `deploy.files` 配置） 4. 实现编译命令支持（compile，可配置或占位） 5. 四步强依赖链管理（fetch → generate → deploy → compile） 6. 多项目支持（n5x / n80 / t1v），独立配置、独立流水线 |
+| **0.3.4** | 2026/4/15 | 1. 实现飞书 VHAL 矩阵表自动下载（fetch，含 Drive Export 降级方案）<br>2. 实现 VehicleGenerateTool 生成引擎集成（generate，含输出抑制与冗余模式）<br>3. 实现多文件部署到 Git 仓库（deploy，支持一源多目标与 `deploy.files` 配置）<br>4. 实现编译命令支持（compile，可配置或占位）<br>5. 四步强依赖链管理（fetch → generate → deploy → compile）<br>6. 多项目支持（n5x / n80 / t1v），独立配置、独立流水线 |
 
 ---
 
