@@ -41,6 +41,8 @@ def _is_reserved_cn_en(cn, en):
         return True
     if e.lower() in ("reserved",):
         return True
+    if not _to_macro_name(e):
+        return True
     return False
 
 
