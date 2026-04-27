@@ -214,33 +214,33 @@ def batch_set_bg_color(token, spreadsheet, sheet_id, row_ranges, color):
     else:
         back_hex = "#ffffff"
 
+    style = {"backColor": back_hex}
+    if not color:
+        style["foreColor"] = _DEFAULT_FORE_COLOR
+
+    BATCH_SIZE = 100
+    all_items = []
     for sr, er, sc, ec in row_ranges:
-        _rate_limit()
         start_col_letter = _col_to_letter_zero_based(sc)
         end_col_letter = _col_to_letter_zero_based(ec)
         range_str = f"{sheet_id}!{start_col_letter}{sr+1}:{end_col_letter}{er+1}"
+        all_items.append({"ranges": [range_str], "style": style})
 
-        style = {"backColor": back_hex}
-        if not color:
-            style["foreColor"] = _DEFAULT_FORE_COLOR
-
-        body = {
-            "data": [
-                {
-                    "ranges": [range_str],
-                    "style": style,
-                }
-            ]
-        }
+    for i in range(0, len(all_items), BATCH_SIZE):
+        batch = all_items[i : i + BATCH_SIZE]
+        _rate_limit()
         resp = requests.put(
             f"{BASE}/sheets/v2/spreadsheets/{spreadsheet}/styles_batch_update",
             headers=_headers(token),
-            json=body,
+            json={"data": batch},
         )
+        if resp.status_code != 200 or not resp.text.strip():
+            print(red(f"  ✘ 设置背景色失败: HTTP {resp.status_code}"))
+            return False
         data = resp.json()
         if data.get("code") != 0:
             m = data.get("msg")
-            print(red(f"  ✘ 设置背景色失败 ({range_str}): {m}"))
+            print(red(f"  ✘ 设置背景色失败: {m}"))
             _hint_feishu_error(m)
             return False
     return True

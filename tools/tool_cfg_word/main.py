@@ -16,7 +16,7 @@ import sys
 from lib.term_color import green, red, yellow
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 CONFIG_FILE = "config.json"
 NAME_MAPPING_FILE = "name_mapping.json"
 
@@ -216,7 +216,7 @@ def step_snapshot(project_name, project_config, cfg):
 def step_property_sync(project_name, project_config, cfg, items):
     """增量同步解析结果到飞书 Property 表 psis.car_cfg（独立在线表格，见 property_sync）。"""
     from lib.feishu_api import get_token
-    from lib.feishu_config import resolve_property_sync_sheet
+    from lib.feishu_config import resolve_feishu_sheet_for_project, resolve_property_sync_sheet
     from lib.property_sync import sync_psis_car_cfg
 
     ps = project_config.get("property_sync")
@@ -234,7 +234,18 @@ def step_property_sync(project_name, project_config, cfg, items):
     if not spreadsheet or not sheet_id:
         return False
     sheet_name = (ps.get("sheet_name") or "").strip()
-    return sync_psis_car_cfg(token, spreadsheet, sheet_id, items, sheet_name)
+
+    mid_spreadsheet = None
+    mid_sheet_id = None
+    mid_resolved = resolve_feishu_sheet_for_project(cfg, project_config, verbose=False)
+    if mid_resolved[0] is not None:
+        mid_spreadsheet = mid_resolved[1]
+        mid_sheet_id = mid_resolved[2]
+
+    return sync_psis_car_cfg(
+        token, spreadsheet, sheet_id, items, sheet_name,
+        mid_token=token, mid_spreadsheet=mid_spreadsheet, mid_sheet_id=mid_sheet_id,
+    )
 
 # ---------------------------------------------------------------------------
 # Commands

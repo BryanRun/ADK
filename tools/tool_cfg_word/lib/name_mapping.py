@@ -68,6 +68,8 @@ def apply_mapping(items, mapping):
         if item.is_reserved or not item.chinese_name:
             item.english_name = f"RESERVED_{reserved_counter}"
             reserved_counter += 1
+        elif item.english_name:
+            pass
         else:
             eng = mapping.get(item.chinese_name)
             if eng:
