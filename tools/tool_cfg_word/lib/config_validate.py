@@ -28,6 +28,16 @@ def validate_config_word_items(
         errors.append("配置项列表为空")
         return False, errors
 
+    en_seen: dict[str, list[int]] = defaultdict(list)
+    for it in items:
+        en = (it.english_name or "").strip()
+        if en and not it.is_reserved and not en.upper().startswith("RESERVED"):
+            en_seen[en].append(int(it.byte))
+    for en, bytes_ in sorted(en_seen.items()):
+        if len(bytes_) > 1:
+            locs = ", ".join(f"BYTE {b}" for b in bytes_)
+            errors.append(f"英文宏名 '{en}' 重复出现于 {locs}")
+
     by_byte: dict[int, int] = defaultdict(int)
     for it in items:
         b = int(it.byte)

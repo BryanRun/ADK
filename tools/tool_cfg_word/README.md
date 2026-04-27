@@ -1,6 +1,6 @@
 # tool_cfg_word 工具包（`adk cfg-word`）
 
-**平台 CLI：`cfg-word`** — **整车配置字映射表**的生成、更新维护与部署；并可在 **carpropertylist 在线表格**中增量维护 **psis.car_cfg** 子表（`property-sync`）。平台总说明见 [AutoDriveKit README](../../README.md)；在仓库根 **`pip install -e .`** 后推荐使用 **`adk cfg-word …`**，参数与本目录 **`python3 main.py …`** 完全一致。
+**平台 CLI：`cfg-word`** — **整车配置字映射表**的生成、更新维护与部署；并可在 **carpropertylist 在线表格**中全量维护 **psis.car_cfg** 子表（`property-sync`）。平台总说明见 [AutoDriveKit README](../../README.md)；在仓库根 **`pip install -e .`** 后推荐使用 **`adk cfg-word …`**，参数与本目录 **`python3 main.py …`** 完全一致。
 
 ## 1. 文档导航
 
@@ -32,13 +32,13 @@
 | `parse` | `-p` | 读本地 Excel → 结构化条目；失败则本项目后续步骤中止 |
 | `sync` | `-s` | 同步到飞书**中间表**（差分与高亮） |
 | `snapshot` | `-S` | 为飞书中间表格创建**命名版本快照** |
-| `validate` | **`-V`（大写）** | BYTE 内 bit 之和为 8；**`vehicle_config_byte_count`** 须覆盖字节 **0 到 N-1**；未配置 N 时本步失败（见配置节） |
+| `validate` | **`-V`（大写）** | BYTE 内 bit 之和为 8；**`vehicle_config_byte_count`** 须覆盖字节 **0 到 N-1**；英文宏名唯一性检查；未配置 N 时本步失败（见配置节） |
 
 ### 2.2 同步、生成与辅助动作
 
 | 动作 | 别名 | 说明 |
 |------|------|------|
-| `property-sync` | **`-P`（大写）** | 同步到独立飞书表 **psis.car_cfg**；有变更时自动在 **changeHistory** 子表追加记录；**弱依赖**，失败仅告警，仍继续 **generate** 与 **deploy** |
+| `property-sync` | **`-P`（大写）** | 全量覆盖写入独立飞书表 **psis.car_cfg**（行序与中间表格一致，自动清理孤立行）；有变更时自动在 **changeHistory** 子表追加记录；**弱依赖**，失败仅告警，仍继续 **generate** 与 **deploy** |
 | `generate` | `-g`、`gen` | 生成 **`output/`** + 项目名 + **`/cfg_cal.h`** |
 | `deploy` | `-d` | 拷贝到 **deploy.repo** 与 **deploy.target**；校验 Git 与分支（见 **lib/deploy.py**） |
 | `list` | `-l` | 列出各项目配置与最新输入文件，**不执行**解析或同步 |
@@ -227,7 +227,7 @@ tools/tool_cfg_word/
   lib/
     feishu_api.py          # 飞书 API 封装
     feishu_sync.py         # 飞书中间表同步
-    property_sync.py       # 飞书 psis.car_cfg 增量同步
+    property_sync.py       # 飞书 psis.car_cfg 全量覆盖同步
     name_mapping.py        # 名称映射管理
     version_detect.py      # 文件名版本/日期检测
     config_validate.py     # BYTE/BIT 与 vehicle_config_byte_count 校验
@@ -268,7 +268,7 @@ python3 main.py feishu-sheets
 
 #### `property_sync`（飞书 Property 表 `psis.car_cfg`）
 
-与**中间表格**无关的另一份飞书**多维表格**：按项目配置 `spreadsheet`（浏览器链接，支持 `/sheets/` 与 `/wiki/`）和 `sheet_name`（子表标题，如 `psis.car_cfg`、`psis.car_cfg.n80`）。`property-sync` 步骤会按解析结果**增量更新**对应行（以 **PSIS属性名** 列为键），跳过 `reserved` 行写入；更新前清除数据区背景色，再对变更单元格标黄。有变更时，自动在同一 spreadsheet 的 **changeHistory** 子表追加一条记录（日期、应用名、变更摘要）。
+与**中间表格**无关的另一份飞书**多维表格**：按项目配置 `spreadsheet`（浏览器链接，支持 `/sheets/` 与 `/wiki/`）和 `sheet_name`（子表标题，如 `psis.car_cfg`、`psis.car_cfg.n80`）。`property-sync` 步骤会按中间表格行序**全量覆盖写入**对应行（宏名从中间表格 D 列获取，确保两表一致），跳过 `reserved` 行写入，自动清理中间表格中已不存在的孤立行；更新前清除数据区背景色，再对变更单元格标黄。有变更时，自动在同一 spreadsheet 的 **changeHistory** 子表追加一条记录（日期、应用名、变更摘要）。
 
 | 字段 | 含义 |
 |------|------|
@@ -285,7 +285,7 @@ python3 main.py feishu-sheets
 1. **已有解析器（三项目已分立）**：在 `config.json` 的 `parser` 中填写注册名即可：
    - **`n5_baic_acic`**（兼容旧名 **`n5x_acic`**）：北汽 N5 系 ACIC「N5系控制器配置字」版式（`Bit7-Bit6(dec)` 等）。
    - **`baic_n80_icc`**：北汽 N80「ICC配置码表」版式（`Bit0`… / `ByteN（hex）`）。
-   - **`jetour_t1v_coding`**：捷途 T1V「03.3.Coding DID」中 **0xF011** 块（默认只取 Byte 0~23，与 24 字节整车配置字对齐；全量见 `jetour_t1v_coding.py` 顶部常量）。
+   - **`jetour_t1v_coding`**：捷途 T1V「03.3.Coding DID」中 **0xF011** 块（全量解析 Excel 配置项，自动从 EN 列提取宏名并标准化）。
 2. **不要跨项目混用**：三种表格列结构不同，各自只使用上面对应的解析器。
 3. **版式不同要新写**：在 `lib/parsers/` 新增一个模块，实现 `parse(excel_path, sheet_name) -> list[ConfigItem]`，并用 `@register_parser("你的名字")` 注册，然后在配置里写 `"parser": "你的名字"`。
 
@@ -295,7 +295,7 @@ python3 main.py feishu-sheets
 
 每个项目应配置 **正整数 N**，表示本项目配置字总字节数。
 
-1. **校验（`validate` / 默认流水线）**：`lib/config_validate.py` 要求必须配置该字段，否则 **`validate` 直接失败**并提示补全。通过配置后，校验将检查：每个 BYTE 上各条目 **bit 之和为 8**；BYTE 落在 **0…N-1**；且 **0…N-1 每个字节在解析结果中至少出现一次**（可与飞书中表对齐）。
+1. **校验（`validate` / 默认流水线）**：`lib/config_validate.py` 要求必须配置该字段，否则 **`validate` 直接失败**并提示补全。通过配置后，校验将检查：每个 BYTE 上各条目 **bit 之和为 8**；BYTE 落在 **0…N-1**；且 **0…N-1 每个字节在解析结果中至少出现一次**（可与飞书中表对齐）；此外还会检查**英文宏名唯一性**（非 reserved 行的宏名不得重复出现于不同 BYTE）。
 2. **解析阶段补全**：在已配置 N 的前提下，解析完成后会对 **0…N-1** 中缺失的字节自动插入「整字节 8bit reserved」占位项，再进入名称映射与后续步骤；适用于表格未逐行列出、但固件约定固定总长（如 24 字节）的场景（见 `lib/gap_fill.py`）。
 
 ```json
@@ -392,6 +392,7 @@ python3 main.py init-mapping n50
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
+| **1.3.0** | 2026/4/27 | 1. t1v 解析器重构：去除 MAX_VEHICLE_BYTE 截断，全量解析 Excel 配置项<br>2. 解析器直接从 Excel EN 列提取英文宏名并标准化（大写、下划线替换、数字开头加 N\_ 前缀、VEHICLE\_TYPE 自动追加 \_MODE）<br>3. 支持 `-` 分隔的字节和位范围（如 79-87、0-7）<br>4. E 列改为 col 9 + col 13（值描述）换行拼接，值描述改为从 col 13 获取<br>5. property-sync 改为全量覆盖写入，行序与中间表格一致，自动清理孤立行<br>6. property-sync 宏名从中间表格 D 列获取，确保两表宏名一致<br>7. validate 新增英文宏名唯一性校验<br>8. 飞书设置背景色改为分批请求（每批 100 个 range），避免大量单元格时超时<br>9. changeHistory D 列自动换行 |
 | **1.2.0** | 2026/4/26 | 1. parse 阶段缺少映射时自动从飞书拉取，无需手动 init-mapping<br>2. 修复 Excel 换行符导致配置项名称与映射表不匹配（中英文间换行→空格归一化）<br>3. 修复飞书同步清背景色时行范围超出网格限制<br>4. property-sync changeHistory 子表名匹配改为忽略大小写<br>5. property-sync changeHistory 日期列改为日期格式写入、变更单元格自动高亮<br>6. 获取飞书应用名失败降级为提示，不阻断 property-sync |
 | **1.1.0** | 2026/4/26 | 1. 新增 snapshot 流水线步骤，sync 后自动为飞书中间表创建命名版本快照<br>2. property-sync 的"通知周期"和"默认值"列改为数字类型写入<br>3. property-sync 变更后自动在 changeHistory 子表追加记录（日期、应用名、变更摘要）<br>4. 新增飞书应用名获取（get_app_name）<br>5. 首次使用体验优化：输入目录/文件缺失时给出明确路径提示 |
 | **1.0.0** | 2026/4/9 | 1. 实现本地 Excel 配置字解析（parse），支持多种表格版式解析器（ACIC、ICC、Coding DID）<br>2. 实现飞书中间表差分同步（sync），变更单元格自动高亮<br>3. 实现 BYTE/BIT 校验（validate），含 bit 之和、字节覆盖完整性检查<br>4. 实现 Property 表增量更新（property-sync），弱依赖不阻断后续步骤<br>5. 实现 `cfg_cal.h` 代码生成（generate）与 Git 仓库部署（deploy）<br>6. 实现中文→英文宏名映射管理（name_mapping.json + init-mapping）<br>7. 实现缺失字节自动补全（vehicle_config_byte_count 配置）<br>8. 多项目支持，独立配置、独立流水线、互不影响 |
