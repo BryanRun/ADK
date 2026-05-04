@@ -2,17 +2,9 @@
 
 from __future__ import annotations
 
-try:
-    from importlib.metadata import metadata
-
-    _md = metadata("autodrivekit")
-    _PKG_VERSION = (_md.get("Version") or "").strip()
-except Exception:  # noqa: BLE001 — 未安装为包时仍可回退
-    _PKG_VERSION = ""
-
 from autodrivekit import __version__
 
-PLATFORM_VERSION = _PKG_VERSION or __version__
+PLATFORM_VERSION = __version__
 
 # 简介：突出「统一工具平台」与简称 ADK（页眉展示，不依赖 pyproject description）
 PLATFORM_SUMMARY = (

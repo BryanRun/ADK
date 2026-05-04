@@ -2,7 +2,7 @@
 
 **平台 CLI：`property`** — 车辆属性（CarProperty）生成与导入。平台总说明见 [AutoDriveKit README](../../README.md)。
 
-**调用方式**：在仓库根已 `pip install -e .` 时优先使用 `adk property …`，参数与在本目录执行 `python3 main.py …` 完全一致（`adk property --help` 等同 `python3 main.py --help`）。**一条龙**示例：`adk property BAIC`（对项目 `BAIC` 跑默认完整流水线 scan+fetch+generate+deploy+snapshot）。仅输入 **`adk`** 进入交互菜单并选择 **property** 时，会先进入 **步骤 2 · 选择项目**（来自本目录 **`config.json`** 的 **`projects`**），再填写参数。平台 **`adk -h`** 含页眉（简介/版本/作者/版权）、**通用选项**（`-h`/`-v`/`update`/`doctor`）、**工具包**、**交互选项**、**专业选项（一条龙）** 等分区（**`adk -v`** / **`adk --version`** 为平台版本号）。
+**调用方式**：在仓库根已 `pip install -e .` 时优先使用 `adk property …`，参数与在本目录执行 `python3 main.py …` 完全一致（`adk property --help` 等同 `python3 main.py --help`）。**一条龙**示例：`adk property BAIC`（对项目 `BAIC` 跑默认完整流水线 scan+fetch+generate+deploy+snapshot）。仅输入 **`adk`** 进入交互菜单并选择 **property** 时，会先进入 **步骤 2 · 选择项目**（来自本目录 **`config.json`** 的 **`projects`**），再填写参数。平台 **`adk -h`** 含页眉（简介/版本/作者/版权）、**通用参数**（`-h`/`-v`/`update`/`doctor`）、**工具包**、**交互选项**、**专业选项（一条龙）** 等分区（**`adk -v`** / **`adk --version`** 为平台版本号）。
 
 CarPropertyManager 代码自动生成工具（v1.2.1） — 从飞书在线表格自动下载、生成 C/C++ 头文件，并可一键部署到目标 Git 仓库。
 

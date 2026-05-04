@@ -16,8 +16,8 @@ from rich.markup import escape as rich_escape
 from typer import rich_utils as _typer_rich_utils
 from typer.core import HAS_RICH, TyperGroup
 
-# Rich 帮助：「通用选项」面板标题（页眉 / 工具包 / 交互 / 专业选项由 adk_rich_help 绘制）
-_typer_rich_utils.OPTIONS_PANEL_TITLE = "通用选项"
+# Rich 帮助：「通用参数」面板标题（页眉 / 工具包 / 交互 / 专业选项由 adk_rich_help 绘制）
+_typer_rich_utils.OPTIONS_PANEL_TITLE = "通用参数"
 from typer.rich_utils import OPTIONS_PANEL_TITLE as ADK_GENERAL_OPTIONS_PANEL_TITLE
 
 from autodrivekit import __version__ as PLATFORM_VERSION
@@ -42,7 +42,7 @@ def _param_wants_exit(raw: str) -> bool:
 
 
 class ADKRootGroup(TyperGroup):
-    """根帮助：页眉 + 通用选项（含 update）/ 工具包 / 交互 / 专业选项（Rich）。"""
+    """根帮助：页眉 + 通用参数（含 update）/ 工具包 / 交互 / 专业选项（Rich）。"""
 
     def get_help_option(self, ctx: click.Context) -> click.Option | None:
         opt = super().get_help_option(ctx)
@@ -68,8 +68,8 @@ app = typer.Typer(
     help=None,
     epilog=None,
     add_completion=False,
-    # Usage 行：adk [通用选项] [工具包] [ARGS]...
-    options_metavar="[通用选项]",
+    # Usage 行：adk [通用参数] [工具包] [ARGS]...
+    options_metavar="[通用参数]",
     subcommand_metavar="[工具包] [ARGS]...",
     context_settings={"help_option_names": ["-h", "--help"]},
 )

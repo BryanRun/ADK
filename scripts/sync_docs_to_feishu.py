@@ -308,7 +308,8 @@ CFGWORD_REPLACEMENTS: list[tuple[str, str]] = [
 ]
 
 ADK_REPLACEMENTS: list[tuple[str, str]] = [
-    ("对齐平台 1.2.8", "对齐平台 1.2.9"),
+    ("对齐平台 1.2.9", "对齐平台 1.2.10"),
+    ("通用选项", "通用参数"),
 ]
 
 # 版本条目（从旧到新；插入时 oldest-first 使 newest 留在表格最上方）
@@ -318,8 +319,10 @@ CFGWORD_VERSIONS: list[tuple[str, str, str]] = [
 ]
 
 ADK_VERSIONS: list[tuple[str, str, str]] = [
-    ("1.2.9", "2026/4/27",
-     'cfg-word 升至 v1.3.2：t1v reserved 判定增加兜底——英文名标准化后为空（如"/"）也判定为 reserved'),
+    ("1.2.10", "2026/5/4",
+     '1. 修复 adk -h 页眉版本号显示为旧版 pip 元数据（1.1.0）而非实际版本，改为直接读取 pyproject.toml\n'
+     '2. help 页面「通用选项」更名为「通用参数」；子命令（update/doctor）统一使用 bright_green 样式，区别于参数（cyan）和工具包（magenta），并修复 doctor 描述文字未与其他行对齐的问题\n'
+     '3. 交互选项说明文字精简'),
 ]
 
 

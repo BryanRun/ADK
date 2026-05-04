@@ -18,7 +18,7 @@ def rule(title: str) -> None:
 
 
 def panel(title: str, body: str, *, subtitle: str | None = None) -> None:
-    """带边框的内容块，类似 adk -h 中「通用选项 / 工具包」分区效果。"""
+    """带边框的内容块，类似 adk -h 中「通用参数 / 工具包」分区效果。"""
     text = body.rstrip()
     if subtitle:
         text = f"[dim]{subtitle}[/]\n\n{text}"

@@ -1,4 +1,4 @@
-"""adk 根命令 Rich 帮助：页眉元数据、「通用选项」（含 -h/-v 与 update）、「工具包」「交互选项」「专业选项（一条龙）」等分区。"""
+"""adk 根命令 Rich 帮助：页眉元数据、「通用参数」（含 -h/-v 与 update）、「工具包」「交互选项」「专业选项（一条龙）」等分区。"""
 
 from __future__ import annotations
 
@@ -55,8 +55,11 @@ from typer.rich_utils import (
     negative_highlighter,
 )
 
-# 「工具包」注册名一列：与通用选项 / 专业选项中的命令（默认 cyan）区分
+# 「工具包」注册名一列：与通用参数 / 专业选项中的命令（默认 cyan）区分
 TOOL_PACKAGE_FIRST_COLUMN_STYLE = "bold magenta"
+
+# 「通用参数」中子命令（update / doctor 等）：区别于长参数 cyan、短参数 green、工具包 magenta
+GENERAL_CMD_STYLE = "bold bright_green"
 
 TOOL_PANEL_TITLE = "工具包"
 INTERACTIVE_PANEL_TITLE = "交互选项"
@@ -250,51 +253,38 @@ def _print_merged_general_options_panel(
     commands: list[click.Command],
     max_cmd_len: int,
 ) -> None:
-    """根级 -h/-v 与 `update` 及其子选项同一套多列表格对齐（Typer 选项表样式）。"""
+    """根级 -h/-v 与子命令（update/doctor 等）同一套多列表格对齐（Typer 选项表样式）。"""
     opt_table = _options_params_to_table(ctx=ctx, markup_mode=markup_mode, params=options)
-    update_cmd = next((c for c in commands if c.name == "update"), None)
-    other_cmds = [c for c in commands if c.name != "update"]
+    if opt_table is None:
+        opt_table = _new_options_style_table()
 
-    if opt_table is not None and update_cmd is not None:
+    for cmd in commands:
         opt_table.add_section()
-        sub_ctx = click.Context(update_cmd, parent=ctx, info_name=update_cmd.name or "update")
-        helptext = (update_cmd.short_help or update_cmd.help or "").strip()
+        sub_ctx = click.Context(cmd, parent=ctx, info_name=cmd.name or "")
+        helptext = (cmd.short_help or cmd.help or "").strip()
         opt_table.add_row(
-            highlighter("update"),
+            Text(cmd.name or "", style=GENERAL_CMD_STYLE),
             Text(""),
             Text(""),
             Text(""),
             Text(""),
             _make_command_help(help_text=helptext or "（无说明）", markup_mode=markup_mode),
         )
-        uopts = [
+        sub_opts = [
             p
-            for p in update_cmd.get_params(sub_ctx)
+            for p in cmd.get_params(sub_ctx)
             if isinstance(p, click.Option)
             and not getattr(p, "hidden", False)
             and getattr(p, "name", None) != "help"
         ]
-        _append_option_rows_to_table(
-            opt_table, ctx=sub_ctx, markup_mode=markup_mode, params=uopts
-        )
+        if sub_opts:
+            _append_option_rows_to_table(
+                opt_table, ctx=sub_ctx, markup_mode=markup_mode, params=sub_opts
+            )
 
-    cmd_len = max(
-        max_cmd_len,
-        max((len(c.name or "") for c in other_cmds), default=0),
-        8,
-    )
-    cmd_table = (
-        _commands_to_table(commands=other_cmds, markup_mode=markup_mode, cmd_len=cmd_len)
-        if other_cmds
-        else None
-    )
-    parts: list[RenderableType] = [p for p in (opt_table, cmd_table) if p is not None]
-    if not parts:
-        return
-    body: RenderableType = parts[0] if len(parts) == 1 else Group(*parts)
     console.print(
         Panel(
-            body,
+            opt_table,
             border_style=STYLE_OPTIONS_PANEL_BORDER,
             title=OPTIONS_PANEL_TITLE,
             title_align=ALIGN_OPTIONS_PANEL,
@@ -429,8 +419,7 @@ def _print_interactive_panel(*, console: object, markup_mode: MarkupModeStrict) 
         "[dim]（仅输入此行，末尾不要跟子命令或其它参数）[/]"
     )
     rest = Text.from_markup(
-        "进入 Rich 向导后依次选择工具包、项目（若 [dim]adk-tool.json[/] 配置了 "
-        "[dim]interactive_project_pick[/]）及参数。非交互用法见上方「通用选项」「工具包」及下方「专业选项」。"
+        "进入 Rich 向导后依次选择工具包、项目及参数。非交互用法见下方「专业选项」。"
     )
     console.print(
         Panel(
@@ -523,7 +512,7 @@ def adk_root_rich_format_help(
     ctx: click.Context,
     markup_mode: MarkupModeStrict,
 ) -> None:
-    """页眉元数据 + 通用选项（含 update）/ 工具包 / 交互 / 专业选项（一条龙）；不含 Usage 行与冗长 epilog。"""
+    """页眉元数据 + 通用参数（含 update）/ 工具包 / 交互 / 专业选项（一条龙）；不含 Usage 行与冗长 epilog。"""
     console = _get_rich_console()
 
     _print_platform_banner(console=console, markup_mode=markup_mode)
