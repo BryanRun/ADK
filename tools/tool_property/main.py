@@ -32,7 +32,7 @@ import argparse
 import subprocess
 from datetime import datetime
 
-VERSION = '1.2.1'
+VERSION = '1.2.2'
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
@@ -618,13 +618,11 @@ def _print_scan_report(project_name, diffs):
             n = len(d['added_rows'])
             total_added += n
             print(green(f"    Sheet: {sheet}  [新增 sheet — {n} 行]"))
-            for row_idx, row in d['added_rows'][:10]:
+            for row_idx, row in d['added_rows']:
                 preview = ' | '.join(row[:6])
                 if len(row) > 6:
                     preview += ' | ...'
                 print(green(f"      行 {row_idx + 1}: {preview}"))
-            if n > 10:
-                print(green(f"      ... 共 {n} 行"))
             print()
             continue
 
@@ -634,13 +632,11 @@ def _print_scan_report(project_name, diffs):
             n = len(d['removed_rows'])
             total_removed += n
             print(red(f"    Sheet: {sheet}  [已删除 sheet — {n} 行]"))
-            for row_idx, row in d['removed_rows'][:10]:
+            for row_idx, row in d['removed_rows']:
                 preview = ' | '.join(row[:6])
                 if len(row) > 6:
                     preview += ' | ...'
                 print(red(f"      行 {row_idx + 1}: {preview}"))
-            if n > 10:
-                print(red(f"      ... 共 {n} 行"))
             print()
             continue
 
@@ -660,33 +656,27 @@ def _print_scan_report(project_name, diffs):
         if added_rows:
             total_added += len(added_rows)
             print(green(f"      新增行: {len(added_rows)} 行"))
-            for row_idx, row in added_rows[:10]:
+            for row_idx, row in added_rows:
                 preview = ' | '.join(row[:6])
                 if len(row) > 6:
                     preview += ' | ...'
                 print(green(f"        行 {row_idx + 1}: {preview}"))
-            if len(added_rows) > 10:
-                print(green(f"        ... 共 {len(added_rows)} 行"))
 
         if removed_rows:
             total_removed += len(removed_rows)
             print(red(f"      删除行: {len(removed_rows)} 行"))
-            for row_idx, row in removed_rows[:10]:
+            for row_idx, row in removed_rows:
                 preview = ' | '.join(row[:6])
                 if len(row) > 6:
                     preview += ' | ...'
                 print(red(f"        行 {row_idx + 1}: {preview}"))
-            if len(removed_rows) > 10:
-                print(red(f"        ... 共 {len(removed_rows)} 行"))
 
         if modified_cells:
             total_modified += len(modified_cells)
             print(yellow(f"      修改: {len(modified_cells)} 处"))
-            for row_idx, col_idx, ov, nv in modified_cells[:20]:
+            for row_idx, col_idx, ov, nv in modified_cells:
                 col_letter = _col_letter(col_idx + 1)
                 print(yellow(f"        行 {row_idx + 1}, 列 {col_letter}: {ov} → {nv}"))
-            if len(modified_cells) > 20:
-                print(yellow(f"        ... 共 {len(modified_cells)} 处"))
 
         print()
 

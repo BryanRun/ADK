@@ -1,6 +1,6 @@
 # AutoDriveKit
 
-![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-green) ![Version](https://img.shields.io/badge/Version-1.2.10-orange)
+![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-green) ![Version](https://img.shields.io/badge/Version-1.2.11-orange)
 
 **AutoDriveKit**（简称 **ADK**）是**统一工具平台**：为车辆相关代码生成与配置同步提供**单一 CLI 入口** `adk`。每个工具以**独立工具包**形式放在固定目录下，通过清单注册后即可被 `adk` 识别，实现「即插即用」。
 
@@ -417,6 +417,7 @@ $env:FEISHU_APP_SECRET="你的AppSecret"
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
+| **1.2.11** | 2026/5/14 | 1. **property** 升至 v1.2.2：`scan` 差异报告完整展示所有新增行 / 删除行 / 修改单元格，去除 10 行 / 20 处的截断与「... 共 N 处」省略提示 |
 | **1.2.10** | 2026/5/4 | 1. 修复 `adk -h` 页眉版本号显示为旧版 pip 元数据（1.1.0）而非实际版本，改为直接读取 `pyproject.toml`<br>2. help 页面「通用选项」更名为「通用参数」；子命令（update/doctor）统一使用 `bright_green` 样式，区别于参数（cyan）和工具包（magenta），并修复 doctor 描述文字未与其他行对齐的问题<br>3. 交互选项说明文字精简 |
 | **1.2.9** | 2026/4/27 | **cfg-word** 升至 v1.3.2：t1v reserved 判定增加兜底——英文名标准化后为空（如"/"）也判定为 reserved |
 | **1.2.8** | 2026/4/27 | 1. **cfg-word** 升至 v1.3.1：t1v reserved 判定改为仅看英文名（去除中文名"预留""/"判定）<br>2. property-sync changeHistory 变更摘要改为有序列表换行 |
