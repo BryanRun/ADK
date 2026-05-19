@@ -301,6 +301,16 @@ def _print_tool_packages_panel(
     cmd_len: int,
 ) -> None:
     """与 Typer _print_commands_panel 相同布局，但工具包 id 使用 TOOL_PACKAGE_FIRST_COLUMN_STYLE。"""
+    from autodrivekit.registry import discover_tools
+
+    versions: dict[str, str | None] = {t.id: t.version for t in discover_tools()}
+    # 首列宽度需容纳「<id> v<VER>」，对照已发现工具版本号长度扩宽
+    name_versions = [
+        (tid, ver) for tid, ver in versions.items() if ver
+    ]
+    if name_versions:
+        max_combined = max(len(tid) + 2 + len(ver) for tid, ver in name_versions)
+        cmd_len = max(cmd_len, max_combined)
     t_styles: dict[str, Any] = {
         "show_lines": STYLE_COMMANDS_TABLE_SHOW_LINES,
         "leading": STYLE_COMMANDS_TABLE_LEADING,
@@ -331,11 +341,14 @@ def _print_tool_packages_panel(
     for command in commands:
         helptext = command.short_help or command.help or ""
         command_name = command.name or ""
+        ver = versions.get(command_name)
         if command.deprecated:
             command_name_text = Text(f"{command_name}", style=STYLE_DEPRECATED_COMMAND)
             deprecated_rows.append(Text(DEPRECATED_STRING, style=STYLE_DEPRECATED))
         else:
             command_name_text = Text(command_name, style=TOOL_PACKAGE_FIRST_COLUMN_STYLE)
+            if ver:
+                command_name_text.append(f" v{ver}", style="dim")
             deprecated_rows.append(None)
         rows.append(
             [

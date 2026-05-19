@@ -32,7 +32,7 @@ import argparse
 import subprocess
 from datetime import datetime
 
-VERSION = '1.2.2'
+VERSION = '1.2.3'
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
@@ -1098,10 +1098,6 @@ KNOWN_ACTIONS = {
 def cmd_run(project_names, do_scan, do_fetch, do_generate, do_deploy,
             do_snapshot, all_projects):
     """统一执行流水线：scan → fetch → generate → deploy → snapshot。"""
-    target_projects = _resolve_projects(project_names, all_projects)
-    if target_projects is None:
-        return
-
     steps = []
     if do_scan:      steps.append('scan')
     if do_fetch:     steps.append('fetch')
@@ -1109,7 +1105,11 @@ def cmd_run(project_names, do_scan, do_fetch, do_generate, do_deploy,
     if do_deploy:    steps.append('deploy')
     if do_snapshot:  steps.append('snapshot')
     banner = ' + '.join(steps)
-    print(f"=== CarPropertyManager v{VERSION}  [{banner}] ===\n")
+    print(f"=== property v{VERSION}  [{banner}] ===\n")
+
+    target_projects = _resolve_projects(project_names, all_projects)
+    if target_projects is None:
+        return
 
     # scan / fetch / snapshot 都需要飞书 token
     need_feishu = do_scan or do_fetch or do_snapshot

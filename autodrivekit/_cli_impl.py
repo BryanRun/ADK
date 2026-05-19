@@ -288,7 +288,8 @@ def _interactive_menu(tools: list[ToolInfo]) -> None:
 
     menu_lines: list[str] = []
     for i, t in enumerate(tools, start=1):
-        menu_lines.append(f"{i}) [bold]{t.id}[/]  —  {t.title}")
+        ver = f" [dim]v{t.version}[/]" if t.version else ""
+        menu_lines.append(f"{i}) [bold]{t.id}[/]{ver}  —  {t.title}")
     menu_lines.append("0) 退出")
     panel(
         "步骤 1 · 选择工具包",

@@ -3,12 +3,30 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
 from autodrivekit._paths import TOOLS_ROOT
 
 MANIFEST_NAME = "adk-tool.json"
+
+_VERSION_RE = re.compile(
+    r"""^\s*VERSION\s*=\s*['"]([^'"]+)['"]""",
+    re.MULTILINE,
+)
+
+
+def _extract_tool_version(main_py: Path) -> str | None:
+    """从工具入口 main.py 中提取顶层 ``VERSION = "x.y.z"`` 字面量，找不到返回 None。"""
+    try:
+        text = main_py.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    m = _VERSION_RE.search(text)
+    if not m:
+        return None
+    return m.group(1).strip() or None
 
 
 @dataclass(frozen=True)
@@ -42,6 +60,8 @@ class ToolInfo:
     project_pick: ProjectPickConfig | None = None
     # 步骤「说明与参数」顶部高亮块（Rich markup），用于标注默认/推荐流水线
     default_pipeline_banner: str | None = None
+    # 从 main.py 顶层 VERSION 常量提取；解析失败为 None
+    version: str | None = None
 
     @property
     def main_py(self) -> Path:
@@ -145,6 +165,7 @@ def discover_tools() -> list[ToolInfo]:
                     examples=examples_val,
                     project_pick=pick_val,
                     default_pipeline_banner=banner_val,
+                    version=_extract_tool_version(d / str(entry).strip()),
                 ),
             )
         )

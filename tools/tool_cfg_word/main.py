@@ -16,7 +16,7 @@ import sys
 from lib.term_color import green, red, yellow
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "1.3.2"
+VERSION = "1.3.3"
 CONFIG_FILE = "config.json"
 NAME_MAPPING_FILE = "name_mapping.json"
 
@@ -279,10 +279,6 @@ SHORT_FLAGS = {
 def cmd_run(project_names, actions, all_projects, cfg):
     """强依赖（失败则中止本项目后续步骤）: parse → sync → snapshot → validate → generate → deploy。
     弱依赖: property-sync（失败仅告警，继续后续步骤）。"""
-    targets = resolve_projects(project_names, all_projects)
-    if targets is None:
-        return
-
     do_parse = "parse" in actions
     do_sync = "sync" in actions
     do_snapshot = "snapshot" in actions
@@ -290,6 +286,20 @@ def cmd_run(project_names, actions, all_projects, cfg):
     do_property_sync = "property-sync" in actions
     do_gen = "generate" in actions or "gen" in actions
     do_deploy = "deploy" in actions
+
+    steps = []
+    if do_parse:         steps.append("parse")
+    if do_sync:          steps.append("sync")
+    if do_snapshot:      steps.append("snapshot")
+    if do_validate:      steps.append("validate")
+    if do_property_sync: steps.append("property-sync")
+    if do_gen:           steps.append("generate")
+    if do_deploy:        steps.append("deploy")
+    print(f"=== cfg-word v{VERSION}  [{' + '.join(steps)}] ===")
+
+    targets = resolve_projects(project_names, all_projects)
+    if targets is None:
+        return
 
     need_items = (
         do_parse

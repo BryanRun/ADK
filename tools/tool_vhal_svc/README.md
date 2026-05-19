@@ -223,4 +223,5 @@ tools/tool_vhal_svc/
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
+| **0.3.5** | 2026/5/19 | 1. 执行流水线开头新增版本横幅 `=== vhal-svc v<VER>  [<steps>] ===`，反映当前调用的步骤组合<br>2. 横幅在项目解析之前打印，未知项目错误也能看到当前工具版本与步骤 |
 | **0.3.4** | 2026/4/15 | 1. 实现飞书 VHAL 矩阵表自动下载（fetch，含 Drive Export 降级方案）<br>2. 实现 VehicleGenerateTool 生成引擎集成（generate，含输出抑制与冗余模式）<br>3. 实现多文件部署到 Git 仓库（deploy，支持一源多目标与 `deploy.files` 配置）<br>4. 实现编译命令支持（compile，可配置或占位）<br>5. 四步强依赖链管理（fetch → generate → deploy → compile）<br>6. 多项目支持（n5x / n80 / t1v），独立配置、独立流水线 |

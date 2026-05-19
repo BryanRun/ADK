@@ -37,7 +37,7 @@ except ImportError:
 
 # 内嵌 VehicleGenerateTool（QA）脚本与 template/ 的工作目录
 VEHICLE_GEN_ROOT = os.path.join(_BUNDLE_ROOT, "vehicle_generate")
-VERSION = "0.3.4"
+VERSION = "0.3.5"
 CONFIG_FILE = "config.json"
 
 ACTIONS = {
@@ -445,14 +445,21 @@ def cmd_list(all_projects):
 
 
 def cmd_run(project_names, actions, all_projects, cfg) -> bool:
-    targets = resolve_projects(project_names, all_projects)
-    if targets is None:
-        return False
-
     do_fetch = "fetch" in actions
     do_gen = "generate" in actions or "gen" in actions
     do_deploy = "deploy" in actions
     do_compile = "compile" in actions
+
+    steps = []
+    if do_fetch:   steps.append("fetch")
+    if do_gen:     steps.append("generate")
+    if do_deploy:  steps.append("deploy")
+    if do_compile: steps.append("compile")
+    print(f"=== vhal-svc v{VERSION}  [{' + '.join(steps)}] ===")
+
+    targets = resolve_projects(project_names, all_projects)
+    if targets is None:
+        return False
 
     access_token: str | None = None
     if do_fetch:
